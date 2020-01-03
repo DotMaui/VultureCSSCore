@@ -26,6 +26,7 @@ package com.dotmaui.vulturecss.core;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadFromUrl;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadRenderedPage;
+import com.dotmaui.vulturecss.utils.MinifyWithPhCSS;
 import java.net.URL;
 
 public class VultureCSSCore {
@@ -113,11 +114,14 @@ public class VultureCSSCore {
         }
 
         String used_css;
-        used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
-
-        if (this.isMinify()) {
-           //used_css = MinifyWithYUI.Process(used_css);
+        
+        if (!"".equals(this.html)) {        
+            used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
         }
+        else {
+            used_css = MinifyWithPhCSS.Process(this.css);
+        }
+
 
         return used_css;
 
