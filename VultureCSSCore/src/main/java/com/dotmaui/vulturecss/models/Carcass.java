@@ -21,35 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.dotmaui.vulturecss.models;
 
-package com.dotmaui.vulturecss.utils;
+public class Carcass {
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+    private String path;
 
-/**
- *
- * @author .Maui
- */
-public final class MinifyWithYUI {
+    /**
+     * Get the value of path
+     *
+     * @return the value of path
+     */
+    public String getPath() {
+        return path;
+    }
 
-    public static String Process(String css) {
+    /**
+     * Set the value of path
+     *
+     * @param path new value of path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-        StringWriter stringWriter = new StringWriter(1024);
+    private String usedCSS;
 
-        try {
+    /**
+     * Get the value of usedCSS
+     *
+     * @return the value of usedCSS
+     */
+    public String getUsedCSS() {
+        return usedCSS;
+    }
 
-            CssCompressor compressor = new CssCompressor(new StringReader(css));
-            compressor.compress(stringWriter, 8000);
-
-        } catch (IOException ex) {
-            //System.err.println(ex.toString());
-        }
-
-        return stringWriter.toString();
-
+    /**
+     * Set the value of usedCSS
+     *
+     * @param usedCSS new value of usedCSS
+     */
+    public void setUsedCSS(String usedCSS) {
+        this.usedCSS = usedCSS;
     }
 
 }

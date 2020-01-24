@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 .Maui | dotmaui.com.
+ * Copyright 2020 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -96,40 +97,50 @@ public class Interface {
         }
 
     }
-    
+
     /**
      * @link https://howtodoinjava.com/java/io/java-read-file-to-string-examples/
+     *
      * @param filePath
-     * @return 
+     * @return
      */
-    public static String readLineByLineJava8(String filePath) 
-{
-    StringBuilder contentBuilder = new StringBuilder();
-    try (Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8)) 
-    {
-        stream.forEach(s -> contentBuilder.append(s).append("\n"));
+    public static String readLineByLineJava8(String filePath) {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contentBuilder.toString();
     }
-    catch (IOException e) 
-    {
-        e.printStackTrace();
-    }
-    return contentBuilder.toString();
-}
- /**
- * Reads given resource file as a string.
- * @link https://stackoverflow.com/questions/6068197/utils-to-read-resource-text-file-to-string-java#46613809
- * @param fileName path to the resource file
- * @return the file's contents
- * @throws IOException if read fails for any reason
- */
-public static String getResourceFileAsString(String fileName) throws IOException {
-    ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-    try (InputStream is = classLoader.getResourceAsStream(fileName)) {
-        if (is == null) return null;
-        try (InputStreamReader isr = new InputStreamReader(is);
-             BufferedReader reader = new BufferedReader(isr)) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+
+    /**
+     * Reads given resource file as a string.
+     * @link https://stackoverflow.com/questions/6068197/utils-to-read-resource-text-file-to-string-java#46613809
+     *
+     * @param fileName path to the resource file
+     * @return the file's contents
+     * @throws IOException if read fails for any reason
+     */
+    public static String getResourceFileAsString(String fileName) throws IOException {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream(fileName)) {
+            if (is == null) {
+                return null;
+            }
+            try (InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader reader = new BufferedReader(isr)) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
         }
     }
-}
+
+    public static boolean isValidPath(String path) {
+        try {
+            Paths.get(path);
+        } catch (InvalidPathException | NullPointerException ex) {
+            return false;
+        }
+        return true;
+    }
 }

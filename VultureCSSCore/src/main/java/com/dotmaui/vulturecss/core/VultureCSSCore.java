@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 .Maui | dotmaui.com.
+ * Copyright 2020 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,16 @@
  */
 package com.dotmaui.vulturecss.core;
 
-import com.dotmaui.vulturecss.models.VultureCSSOptions;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.ExtractAllStyleSheetsUrls;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadFromUrl;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadRenderedPage;
+import com.dotmaui.vulturecss.models.Carcass;
+import com.dotmaui.vulturecss.models.VultureCSSOptions;
+import com.dotmaui.vulturecss.utils.Interface;
 import com.dotmaui.vulturecss.utils.MinifyWithPhCSS;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VultureCSSCore {
 
@@ -58,7 +63,6 @@ public class VultureCSSCore {
         this.cssUrl = cssUrl;
     }
 
-
     public VultureCSSCore(URL cssUrl, URL htmlUrl, VultureCSSOptions options) {
         this.htmlUrl = htmlUrl;
         this.cssUrl = cssUrl;
@@ -70,7 +74,7 @@ public class VultureCSSCore {
      * @return String
      * @throws Exception
      */
-    public String Process() throws Exception {
+    public List<Carcass> Process() throws Exception {
 
         if (this.options == null) {
             this.options = new VultureCSSOptions();
@@ -92,7 +96,7 @@ public class VultureCSSCore {
             this.css = DownloadFromUrl(this.cssUrl);
 
             if (this.css == null) {
-                throw new Exception("CSS file download failed");
+                throw new Exception("The download of the CSS file has failed");
             }
 
         }
@@ -104,26 +108,51 @@ public class VultureCSSCore {
                     : DownloadRenderedPage(this.htmlUrl);
 
             if (this.html == null) {
-                throw new Exception("HTML file download failed");
+                throw new Exception("The download of the HTML file has failed");
             }
 
         }
 
-        if (this.css.equals("")) {
-            throw new Exception("No CSS to process.");
+        if (this.css.equals("") && this.html.equals("")) {
+            throw new Exception("Nothing to process");
         }
 
-        String used_css;
-        
-        if (!"".equals(this.html)) {        
-            used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
-        }
-        else {
-            used_css = MinifyWithPhCSS.Process(this.css);
+        List<Carcass> carcasses = new ArrayList<>();
+
+        if (!"".equals(this.html) && "".equals(this.css)) {
+
+            carcasses = ExtractAllStyleSheetsUrls(html, this.htmlUrl);
+
+            for (Carcass c : carcasses) {
+               
+                URL css_url = new URL(c.getPath());
+                
+                String css_string_from_url = Interface.DownloadFromUrl(css_url);
+                
+                String used_css = CompareCSSHTML.Process(this.html, css_string_from_url, this.options);
+                c.setUsedCSS(used_css);
+                
+            }
+
+        } else if (!"".equals(this.html)) {
+
+            String used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
+
+            Carcass carcass = new Carcass();
+            carcass.setUsedCSS(used_css);
+            carcasses.add(carcass);
+            
+        } else {
+
+            String used_css = MinifyWithPhCSS.Process(this.css);
+
+            Carcass carcass = new Carcass();
+            carcass.setUsedCSS(used_css);
+            carcasses.add(carcass);
+
         }
 
-
-        return used_css;
+        return carcasses;
 
     }
 

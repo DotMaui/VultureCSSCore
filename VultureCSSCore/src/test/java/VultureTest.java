@@ -21,35 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+import com.dotmaui.vulturecss.core.VultureCSSCore;
+import com.dotmaui.vulturecss.models.Carcass;
+import java.net.URL;
+import java.util.List;
 
-package com.dotmaui.vulturecss.utils;
+public class VultureTest {
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-/**
- *
- * @author .Maui
- */
-public final class MinifyWithYUI {
-
-    public static String Process(String css) {
-
-        StringWriter stringWriter = new StringWriter(1024);
-
-        try {
-
-            CssCompressor compressor = new CssCompressor(new StringReader(css));
-            compressor.compress(stringWriter, 8000);
-
-        } catch (IOException ex) {
-            //System.err.println(ex.toString());
-        }
-
-        return stringWriter.toString();
-
+    /**
+     * @param args the command line arguments
+     * @throws java.lang.Exception
+     */
+    public static void main(String[] args) throws Exception {
+        // TODO code application logic here
+        
+        URL url = new URL("https://www.traghettilines.it/");
+        VultureCSSCore v = new VultureCSSCore();
+        v.setHtmlUrl(url);
+        List<Carcass> carcasses =v.Process();
+        
+        carcasses.forEach((c) -> {
+            System.out.println(c.getUsedCSS());
+        });
+        
+        
     }
-
+    
 }

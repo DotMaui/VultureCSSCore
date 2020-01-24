@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dotmaui.vulturecss</groupId>
     <artifactId>VultureCSSCore</artifactId>
-    <version>0.1.1-BETA</version>
+    <version>0.2.0-BETA</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -11,6 +11,32 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>com.dotmaui.vulturecss.MainClass</mainClass>       
     </properties>
+    <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+  <repositories>
+  <!-- Copy this section from the Maven section of the "Connect to Feed" dialog -->
+  <repository>
+    <id>central</id>
+    <name>Central Repository</name>
+    <url>https://repo.maven.apache.org/maven2</url>
+    <layout>default</layout>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+  </repositories>
     <dependencies>
         <dependency>
             <groupId>com.helger</groupId>
