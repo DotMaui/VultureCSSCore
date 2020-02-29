@@ -65,4 +65,24 @@ public class Carcass {
         this.usedCSS = usedCSS;
     }
 
+    private boolean parseError = false;
+
+    /**
+     * Get the value of parseError
+     *
+     * @return the value of parseError
+     */
+    public boolean isParseError() {
+        return parseError;
+    }
+
+    /**
+     * Set the value of parseError
+     *
+     * @param parseError new value of parseError
+     */
+    public void setParseError(boolean parseError) {
+        this.parseError = parseError;
+    }
+
 }

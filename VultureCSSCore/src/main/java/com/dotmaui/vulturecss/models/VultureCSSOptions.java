@@ -94,6 +94,5 @@ public class VultureCSSOptions {
     public void setECSSVersion(ECSSVersion ECSSVersion) {
         this.ECSSVersion = ECSSVersion;
     }
-
     
 }

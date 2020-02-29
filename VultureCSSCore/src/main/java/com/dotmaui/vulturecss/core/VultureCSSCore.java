@@ -124,24 +124,36 @@ public class VultureCSSCore {
             carcasses = ExtractAllStyleSheetsUrls(html, this.htmlUrl);
 
             for (Carcass c : carcasses) {
-               
+
                 URL css_url = new URL(c.getPath());
-                
+
                 String css_string_from_url = Interface.DownloadFromUrl(css_url);
-                
-                String used_css = CompareCSSHTML.Process(this.html, css_string_from_url, this.options);
+                String used_css = "";
+
+                try {
+                    used_css = CompareCSSHTML.Process(this.html, css_string_from_url, this.options);
+                } catch (Exception ex) {
+                    c.setParseError(true);
+                }
+
                 c.setUsedCSS(used_css);
-                
+
             }
 
         } else if (!"".equals(this.html)) {
 
-            String used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
-
             Carcass carcass = new Carcass();
+            String used_css = "";
+
+            try {
+                used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
+            } catch (Exception ex) {
+                carcass.setParseError(true);
+            }
+
             carcass.setUsedCSS(used_css);
             carcasses.add(carcass);
-            
+
         } else {
 
             String used_css = MinifyWithPhCSS.Process(this.css);

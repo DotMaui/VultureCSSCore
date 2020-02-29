@@ -49,12 +49,17 @@ public class CompareCSSHTML {
      * @return
      * @throws IOException
      */
-    public static String Process(String html, String css, VultureCSSOptions options) throws IOException {
+    public static String Process(String html, String css, VultureCSSOptions options) throws IOException, Exception {
 
         CascadingStyleSheet finalCSS = new CascadingStyleSheet();
-        CascadingStyleSheet initialCSS = CSSReader.readFromString(css, ECSSVersion.LATEST);
-
-        if (html != null && initialCSS != null) {
+        CascadingStyleSheet initialCSS = CSSReader.readFromString(css, ECSSVersion.LATEST);  
+        
+        if (initialCSS == null) {
+            
+            throw new Exception("Failed to parse CSS");
+            
+        }
+        else if (html != null) {
 
             VultureCSSCoreHTMLChecker htmlChecker = new VultureCSSCoreHTMLChecker(html);
 
@@ -99,7 +104,6 @@ public class CompareCSSHTML {
                     }
 
                 } else {
-                    //System.out.println(rules.get(i).getClass().getName());
                     finalCSS.addRule(rules.get(i));
                 }
 

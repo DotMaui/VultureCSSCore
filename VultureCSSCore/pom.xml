@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dotmaui.vulturecss</groupId>
     <artifactId>VultureCSSCore</artifactId>
-    <version>0.2.0-BETA</version>
+    <version>0.2.1-BETA</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,5 +130,5 @@
             </plugin>            
         </plugins>
     </build>
-    <name>Vulture CSS Core</name>
+    <name>VultureCSS Core</name>
 </project>

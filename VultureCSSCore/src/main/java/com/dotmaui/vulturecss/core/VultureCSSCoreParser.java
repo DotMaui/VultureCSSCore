@@ -24,7 +24,6 @@
 package com.dotmaui.vulturecss.core;
 
 import com.dotmaui.vulturecss.models.Carcass;
-import com.dotmaui.vulturecss.utils.Interface;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CSSMediaRule;
@@ -46,11 +45,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-/**
- *
- * @author .Maui
- */
 public class VultureCSSCoreParser {
+    //private static final Logger LOGGER = LoggerFactory.getLogger (VultureCSSCoreParser.class);
 
     /**
      *
@@ -66,8 +62,8 @@ public class VultureCSSCoreParser {
 
         if (readFromString != null) {
             allRules = readFromString.getAllRules();
-        }
-
+        } 
+        
         return allRules;
 
     }
@@ -128,8 +124,8 @@ public class VultureCSSCoreParser {
                 finalMediaRule.addRule(rule);
             });
 
-            //used_css.append(finalMediaRule.getAsCSSString());
             return finalMediaRule;
+            
         } else {
             return null;
 
@@ -178,21 +174,7 @@ public class VultureCSSCoreParser {
 
     public static List<Carcass> ExtractAllStyleSheetsUrls(String html, URL html_url) {
 
-        //String html_content;
         List<Carcass> Carcasses = new ArrayList<>();
-
-        /*try {
-            java.net.URL u = new java.net.URL(html);
-            html_content = Interface.DownloadFromUrl(u);
-        } catch (MalformedURLException ex) {
-                System.err.print(Interface.isValidPath(html));
-            if (Interface.isValidPath(html)) {
-                html_content = Interface.readLineByLineJava8(html);
-            } else {
-                html_content = html;
-            }
-
-        }*/
 
         Document doc = Jsoup.parse(html);
         Elements links_css = doc.select("link[rel='stylesheet']");
@@ -202,7 +184,7 @@ public class VultureCSSCoreParser {
             Carcass c = new Carcass();
             c.setPath(link_css.attr("href"));
 
-            if (!c.getPath().startsWith("http") && html_url!=null) {
+            if (!c.getPath().startsWith("http") && html_url != null) {
 
                 URL mergedURL;
 
