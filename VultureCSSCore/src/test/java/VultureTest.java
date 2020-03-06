@@ -23,8 +23,6 @@
  */
 import com.dotmaui.vulturecss.core.VultureCSSCore;
 import com.dotmaui.vulturecss.models.Carcass;
-import com.sun.javafx.css.Stylesheet;
-import com.sun.javafx.css.parser.CSSParser;
 import java.net.URL;
 import java.util.List;
 
@@ -50,14 +48,7 @@ public class VultureTest {
         */
         
         String style_css = com.dotmaui.vulturecss.utils.Interface.DownloadFromUrl(new URL("https://www.traghettilines.it/css/style.css?v=20190519"));
-        CSSParser Java9CSSParser = new CSSParser();
-        Stylesheet style_sheet = Java9CSSParser.parse( style_css);
-         //System.out.println("Regole --> " + style_sheet.getRules().size());
-        for (int i = 0; i < style_sheet.getRules().size();i++) {
-        
-            System.out.println("Regola --> " + style_sheet.getRules().get(i).getSelectors());
-            
-        }
+
         
     }
     
