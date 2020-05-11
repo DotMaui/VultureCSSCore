@@ -21,29 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-import com.dotmaui.vulturecss.core.VultureCSSCore;
-import com.dotmaui.vulturecss.models.Carcass;
-import java.net.URL;
-import java.util.List;
+package com.dotmaui.vulturecss.jstyleparser;
 
-public class VultureTest {
+import cz.vutbr.web.css.CSSException;
+import cz.vutbr.web.css.CSSFactory;
+import cz.vutbr.web.css.StyleSheet;
+import java.io.IOException;
 
-    /**
-     * @param args the command line arguments
-     * @throws java.lang.Exception
-     */
-    public static void main(String[] args) throws Exception {
-        // TODO code application logic here
+public class VultureCSSWithjStyleParser {
 
-        URL url = new URL("https://dotmaui.com");
-        VultureCSSCore v = new VultureCSSCore();
-        v.setHtmlUrl(url);
-        List<Carcass> carcasses = v.Process();
+    public static String ParseCSS(String style_css) throws IOException, CSSException {
+        StyleSheet sheet = CSSFactory.parseString(style_css, null);
 
-        carcasses.forEach((c) -> {
-            System.out.println(c.getPath());
-            System.out.println(c.getUsedCSS());
-        });
+        StringBuilder css_rebuilt = new StringBuilder();
+
+        for (int i = 0; i < sheet.size(); i++) {
+
+            css_rebuilt.append(sheet.get(i));
+
+            if (sheet.get(i) instanceof cz.vutbr.web.csskit.RuleSetImpl) {
+
+            } else if (sheet.get(i) instanceof cz.vutbr.web.csskit.RuleMediaImpl) {
+
+            } else if (sheet.get(i) instanceof cz.vutbr.web.csskit.RuleKeyframesImpl) {
+
+            } else if (sheet.get(i) instanceof cz.vutbr.web.csskit.RulePageImpl) {
+
+            }
+        }
+        
+        // Bug nth-child selector
+        // https://github.com/radkovo/jStyleParser/issues/108
+        return css_rebuilt.toString()                
+                .replace("nth-child(\\3", "nth-child(");
 
     }
 

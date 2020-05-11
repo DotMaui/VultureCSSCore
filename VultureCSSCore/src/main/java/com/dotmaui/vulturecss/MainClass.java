@@ -59,14 +59,14 @@ public class MainClass {
          * Disable log4j logging from Java code.
          * @link https://stackoverflow.com/questions/8709357/how-to-disable-log4j-logging-from-java-code/8711378#8711378
          */
-        //Logger.getLogger("ac.biu.nlp.nlp.engineml").setLevel(Level.OFF);
-        //Logger.getLogger("org.BIU.utils.logging.ExperimentLogger").setLevel(Level.OFF);
-        //Logger.getRootLogger().setLevel(Level.OFF);
+        Logger.getLogger("ac.biu.nlp.nlp.engineml").setLevel(Level.OFF);
+        Logger.getLogger("org.BIU.utils.logging.ExperimentLogger").setLevel(Level.OFF);
+        Logger.getRootLogger().setLevel(Level.OFF);
 
         // Path to your log4j.properties properties.
         // See an exemple of a log4j.properties file here: https://dotmaui.com/pastebin/GylLax2D
-        String log4jConfPath = "/home/maui/log4j.properties";
-        PropertyConfigurator.configure(log4jConfPath);
+        //String log4jConfPath = "/home/maui/log4j.properties";
+        //PropertyConfigurator.configure(log4jConfPath);
               
         Options options = new Options();
         Option help = new Option("help", "print this message");

@@ -25,6 +25,7 @@ package com.dotmaui.vulturecss.core;
 
 import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetUsedRulesFromMediaRule;
 import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetUsedRulesFromSupportsRule;
+import com.dotmaui.vulturecss.jstyleparser.VultureCSSWithjStyleParser;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.ECSSVersion;
@@ -52,14 +53,24 @@ public class CompareCSSHTML {
     public static String Process(String html, String css, VultureCSSOptions options) throws IOException, Exception {
 
         CascadingStyleSheet finalCSS = new CascadingStyleSheet();
-        CascadingStyleSheet initialCSS = CSSReader.readFromString(css, ECSSVersion.LATEST);  
-        
+        CascadingStyleSheet initialCSS = CSSReader.readFromString(css, ECSSVersion.LATEST);
+
+        // I try to get a correct CSS through jStyleParser.
+        // ph-css returns null in case of unrecoverable errors in CSS. 
+        // jStyleParser instead removes the invalid rule and correctly parsers the rest.
+        // I don't use jStyleParser as the main parser because it seems less updated and with more bugs
         if (initialCSS == null) {
-            
-            throw new Exception("Failed to parse CSS");
-            
+
+            String new_css = VultureCSSWithjStyleParser.ParseCSS(css);
+            initialCSS = CSSReader.readFromString(new_css, ECSSVersion.LATEST);
+
         }
-        else if (html != null) {
+
+        if (initialCSS == null) {
+
+            throw new Exception("Failed to parse CSS");
+
+        } else if (html != null) {
 
             VultureCSSCoreHTMLChecker htmlChecker = new VultureCSSCoreHTMLChecker(html);
 
@@ -113,12 +124,12 @@ public class CompareCSSHTML {
 
         final CSSWriterSettings aSettings;
         aSettings = new CSSWriterSettings(ECSSVersion.LATEST, false);
-        
+
         if (options.isMinifyCSSOutput()) {
             aSettings.setOptimizedOutput(true);
             aSettings.setRemoveUnnecessaryCode(true);
         }
-        
+
         final CSSWriter aWriter = new CSSWriter(aSettings);
         //aWriter.setContentCharset(StandardCharsets.UTF_8.name());
         aWriter.setHeaderText("");

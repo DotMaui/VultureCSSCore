@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dotmaui.vulturecss</groupId>
     <artifactId>VultureCSSCore</artifactId>
-    <version>0.2.1-BETA</version>
+    <version>0.2.3-BETA</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,38 +12,38 @@
         <mainClass>com.dotmaui.vulturecss.MainClass</mainClass>       
     </properties>
     <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-  <!-- Copy this section from the Maven section of the "Connect to Feed" dialog -->
-  <repository>
-    <id>central</id>
-    <name>Central Repository</name>
-    <url>https://repo.maven.apache.org/maven2</url>
-    <layout>default</layout>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-  </repository>
-  </repositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <!-- Copy this section from the Maven section of the "Connect to Feed" dialog -->
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencies>
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-css</artifactId>
-            <version>6.2.1</version>
-        </dependency>
-        <dependency>
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-css</artifactId>
+  <version>6.2.2</version>
+</dependency>
+                <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>2.37.0</version>
+            <version>2.40.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.yahoo.platform.yui/yuicompressor -->
         <dependency>
@@ -77,6 +77,13 @@
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sf.cssbox/jstyleparser -->
+        <dependency>
+            <groupId>net.sf.cssbox</groupId>
+            <artifactId>jstyleparser</artifactId>
+            <version>3.5</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
