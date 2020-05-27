@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dotmaui.vulturecss</groupId>
     <artifactId>VultureCSSCore</artifactId>
-    <version>0.2.3-BETA</version>
+    <version>0.2.4-BETA</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,12 +38,12 @@
         </repository>
     </repositories>
     <dependencies>
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-css</artifactId>
-  <version>6.2.2</version>
-</dependency>
-                <dependency>
+        <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-css</artifactId>
+            <version>6.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
@@ -82,6 +82,12 @@
             <groupId>net.sf.cssbox</groupId>
             <artifactId>jstyleparser</artifactId>
             <version>3.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20200518</version>
         </dependency>
 
     </dependencies>

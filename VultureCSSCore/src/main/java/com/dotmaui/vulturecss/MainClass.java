@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2020 .Maui | dotmaui.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package com.dotmaui.vulturecss;
 
+import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 import com.dotmaui.vulturecss.core.VultureCSSCore;
 import com.dotmaui.vulturecss.models.Carcass;
 import com.dotmaui.vulturecss.utils.Interface;
@@ -44,6 +45,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.PropertyConfigurator;
+import org.json.JSONObject;
 
 public class MainClass {
 
@@ -67,15 +69,15 @@ public class MainClass {
         // See an exemple of a log4j.properties file here: https://dotmaui.com/pastebin/GylLax2D
         //String log4jConfPath = "/home/maui/log4j.properties";
         //PropertyConfigurator.configure(log4jConfPath);
-              
         Options options = new Options();
-        Option help = new Option("help", "print this message");
-        Option css = OptionBuilder.withArgName("file")
+        Option help = new Option("help", "Print this message");
+
+        Option css = OptionBuilder.withArgName("file or url")
                 .hasArg()
                 .withDescription("The CSS to be optimized. It can be a path or a url.")
                 .create("css");
 
-        Option html = OptionBuilder.withArgName("file")
+        Option html = OptionBuilder.withArgName("file or url")
                 .hasArg()
                 .withDescription("The HTML to compare. It can be a path or a url.")
                 .create("html");
@@ -85,16 +87,29 @@ public class MainClass {
                 .withDescription("Output file. If omitted the result will be displayed on the screen.")
                 .create("out");
 
-        Option destination_folder = OptionBuilder.withArgName("file")
+        Option destination_folder = OptionBuilder.withArgName("path")
                 .hasArg()
                 .withDescription("Destination folder. The folder where the files will be saved if only an HTML URL is specified.")
                 .create("df");
 
+        Option dotmaui_apikey = OptionBuilder.withArgName(".Maui apikey")
+                .hasArg()
+                .withDescription("API key to use the services of dotmaui.com. Required to save CSS files to the CDN.")
+                .create("apikey");
+
+        /*Option save_to_cdn = OptionBuilder.withArgName("cdn mode")
+                .hasArg()
+                .withDescription("If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.")
+                .create("cdn");
+         */
+        Option save_to_cdn = new Option("cdn", "If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.");
         options.addOption(help);
         options.addOption(css);
         options.addOption(html);
         options.addOption(output);
         options.addOption(destination_folder);
+        options.addOption(dotmaui_apikey);
+        options.addOption(save_to_cdn);
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
@@ -109,6 +124,10 @@ public class MainClass {
             throw new Exception("Nothing to process");
         }
 
+        if (cmd.hasOption("cdn") && !cmd.hasOption("apikey")) {
+            throw new Exception("Specify a valid API key");
+        }
+
         String final_result;
 
         // If only the html is specified, 
@@ -116,7 +135,7 @@ public class MainClass {
         if (!cmd.hasOption("css")) {
 
             String html_to_compare = cmd.getOptionValue("html");
-            
+
             VultureCSSCore v = new VultureCSSCore();
 
             try {
@@ -126,20 +145,46 @@ public class MainClass {
             } catch (MalformedURLException ex) {
                 throw new UnsupportedOperationException();
             }
-           
+
             List<Carcass> carcasses = v.Process();
 
             for (Carcass c : carcasses) {
 
                 Path p = Paths.get(c.getPath());
                 String file_name = p.getFileName().toString();
+                String used_css = c.getUsedCSS();
 
-                if (cmd.hasOption("df")) {
-                    file_name = cmd.getOptionValue("df") + file_name;
-                }
+                if (!used_css.trim().equals("")) {
 
-                try (PrintWriter out = new PrintWriter(file_name)) {
-                    out.println(c.getUsedCSS());
+                    if (cmd.hasOption("cdn")) {
+
+                        if (!file_name.endsWith(".css")) {
+                            file_name += ".css";
+                        }
+
+                        DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(cmd.getOptionValue("apikey"));
+                        client.setMode(1);
+                        client.setName(file_name);
+
+                        String responseCdn = client.minifyCSSFromString(used_css);
+                        JSONObject obj = new JSONObject(responseCdn);
+
+                        String fileUrl = obj.getString("url");
+
+                        System.out.println("File " + file_name + " saved to " + fileUrl);
+
+                    } else {
+
+                        if (cmd.hasOption("df")) {
+                            file_name = cmd.getOptionValue("df") + file_name;
+                        }
+
+                        try (PrintWriter out = new PrintWriter(file_name)) {
+                            out.println(used_css);
+                        }
+
+                    }
+
                 }
 
             }
@@ -183,6 +228,18 @@ public class MainClass {
                     out.println(final_result);
                 }
 
+            } else if (cmd.hasOption("cdn")) {
+                
+                DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(cmd.getOptionValue("apikey"));
+                client.setMode(1);
+                client.setName("result.min.css");
+
+                String responseCdn = client.minifyCSSFromString(final_result);
+                JSONObject obj = new JSONObject(responseCdn);
+
+                String fileUrl = obj.getString("url");
+
+                System.out.println("Saved to " + fileUrl);
             } else {
                 System.out.print(final_result);
             }
