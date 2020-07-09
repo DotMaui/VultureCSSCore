@@ -31,6 +31,46 @@ import com.helger.css.ECSSVersion;
  */
 public class VultureCSSOptions {
 
+    private String DotMauiApiKey = null;
+
+    /**
+     * Get the value of dotMauiApiKey
+     *
+     * @return the value of dotMauiApiKey
+     */
+    public String getDotMauiApiKey() {
+        return DotMauiApiKey;
+    }
+
+    /**
+     * Set the value of dotMauiApiKey
+     *
+     * @param dotMauiApiKey new value of dotMauiApiKey
+     */
+    public void setDotMauiApiKey(String dotMauiApiKey) {
+        this.DotMauiApiKey = dotMauiApiKey;
+    }
+
+    private boolean CDNMode = false;
+
+    /**
+     * Get the value of cdnMode
+     *
+     * @return the value of cdnMode
+     */
+    public boolean isCdnMode() {
+        return CDNMode;
+    }
+
+    /**
+     * Set the value of cdnMode
+     *
+     * @param cdnMode new value of cdnMode
+     */
+    public void setCdnMode(boolean cdnMode) {
+        this.CDNMode = cdnMode;
+    }
+
     private boolean UseStaticHTMLFromWebPage = true;
 
     public VultureCSSOptions() {
@@ -75,7 +115,7 @@ public class VultureCSSOptions {
         this.MinifyCSSOutput = MinifyCSSOutput;
     }
 
-        private ECSSVersion ECSSVersion;
+    private ECSSVersion ECSSVersion;
 
     /**
      * Get the value of ECSSVersion
@@ -94,5 +134,5 @@ public class VultureCSSOptions {
     public void setECSSVersion(ECSSVersion ECSSVersion) {
         this.ECSSVersion = ECSSVersion;
     }
-    
+
 }

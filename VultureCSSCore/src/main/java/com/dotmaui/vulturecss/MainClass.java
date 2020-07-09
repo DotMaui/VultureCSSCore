@@ -69,6 +69,7 @@ public class MainClass {
         // See an exemple of a log4j.properties file here: https://dotmaui.com/pastebin/GylLax2D
         //String log4jConfPath = "/home/maui/log4j.properties";
         //PropertyConfigurator.configure(log4jConfPath);
+        
         Options options = new Options();
         Option help = new Option("help", "Print this message");
 

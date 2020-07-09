@@ -25,6 +25,26 @@ package com.dotmaui.vulturecss.models;
 
 public class Carcass {
 
+    private String cdnUrl = null;
+
+    /**
+     * Get the value of cdnUrl
+     *
+     * @return the value of cdnUrl
+     */
+    public String getCdnUrl() {
+        return cdnUrl;
+    }
+
+    /**
+     * Set the value of cdnUrl
+     *
+     * @param cdnUrl new value of cdnUrl
+     */
+    public void setCdnUrl(String cdnUrl) {
+        this.cdnUrl = cdnUrl;
+    }
+
     private String path;
 
     /**

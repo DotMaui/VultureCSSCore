@@ -31,7 +31,7 @@ import com.helger.css.writer.CSSWriterSettings;
 
 /**
  * 
- * @author maui
+ * @author .Maui
  */
 public class MinifyWithPhCSS {
 

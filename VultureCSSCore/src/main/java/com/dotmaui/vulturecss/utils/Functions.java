@@ -21,37 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-import com.dotmaui.vulturecss.core.VultureCSSCore;
-import com.dotmaui.vulturecss.models.Carcass;
-import com.dotmaui.vulturecss.models.VultureCSSOptions;
-import java.net.URL;
-import java.util.List;
+package com.dotmaui.vulturecss.utils;
 
-public class VultureTest {
+/**
+ *
+ * @author .Maui
+ */
+public class Functions {
 
-    /**
-     * @param args the command line arguments
-     * @throws java.lang.Exception
-     */
-    public static void main(String[] args) throws Exception {
-        // TODO code application logic here
+    // https://stackoverflow.com/questions/8476588/java-equivalent-of-c-sharp-string-isnullorempty-and-string-isnullorwhitespace
+    public static boolean isNullOrEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
 
-        URL url = new URL("https://dotmaui.com");
-                
-        VultureCSSOptions opt = new VultureCSSOptions();
-        opt.setUseStaticHTMLFromWebPage(false);
-        opt.setCdnMode(true);
-        opt.setDotMauiApiKey("");
-        VultureCSSCore v = new VultureCSSCore();
-        v.setHtmlUrl(url);
-        v.setOptions(opt);
-        List<Carcass> carcasses = v.Process();
+    public static boolean isNullOrWhitespace(String s) {
+        return s == null || isWhitespace(s);
 
-        carcasses.forEach((c) -> {
-            System.out.println(c.getPath());
-            System.out.println(c.getCdnUrl());
-        });
+    }
 
+    private static boolean isWhitespace(String s) {
+        int length = s.length();
+        if (length > 0) {
+            for (int i = 0; i < length; i++) {
+                if (!Character.isWhitespace(s.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

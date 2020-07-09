@@ -21,37 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-import com.dotmaui.vulturecss.core.VultureCSSCore;
-import com.dotmaui.vulturecss.models.Carcass;
-import com.dotmaui.vulturecss.models.VultureCSSOptions;
-import java.net.URL;
-import java.util.List;
+package com.dotmaui.vulturecss.utils;
 
-public class VultureTest {
+import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 
-    /**
-     * @param args the command line arguments
-     * @throws java.lang.Exception
-     */
-    public static void main(String[] args) throws Exception {
-        // TODO code application logic here
-
-        URL url = new URL("https://dotmaui.com");
-                
-        VultureCSSOptions opt = new VultureCSSOptions();
-        opt.setUseStaticHTMLFromWebPage(false);
-        opt.setCdnMode(true);
-        opt.setDotMauiApiKey("");
-        VultureCSSCore v = new VultureCSSCore();
-        v.setHtmlUrl(url);
-        v.setOptions(opt);
-        List<Carcass> carcasses = v.Process();
-
-        carcasses.forEach((c) -> {
-            System.out.println(c.getPath());
-            System.out.println(c.getCdnUrl());
-        });
-
+/**
+ *
+ * @author .Maui
+ */
+public class MinifyWithDotMauiApi {
+    
+    public static String Process(String css) throws Exception {
+        
+        String dotmauiapykey =  "";
+        DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(dotmauiapykey);
+        
+        return client.minifyCSSFromString(css);
+        
     }
-
+    
 }
