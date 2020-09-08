@@ -52,4 +52,10 @@ public class Functions {
         return false;
     }
 
+    // Function to concatenate two Strings in Java using <tt>StringBuilder</tt>
+    // https://www.techiedelight.com/concatenate-two-strings-java/
+    public static String concat(String s1, String s2) {
+        return new StringBuilder(s1).append(s2).toString();
+    }
+
 }

@@ -36,11 +36,12 @@ public class VultureTest {
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
 
-        URL url = new URL("https://dotmaui.com");
+        URL url = new URL("https://api.dotmaui.com");
                 
         VultureCSSOptions opt = new VultureCSSOptions();
         opt.setUseStaticHTMLFromWebPage(false);
-        opt.setCdnMode(true);
+        opt.setCDNMode(false);
+        opt.setMergeAll(true);
         opt.setDotMauiApiKey("");
         VultureCSSCore v = new VultureCSSCore();
         v.setHtmlUrl(url);

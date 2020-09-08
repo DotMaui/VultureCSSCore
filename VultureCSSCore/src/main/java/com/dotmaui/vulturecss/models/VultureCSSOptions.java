@@ -53,22 +53,35 @@ public class VultureCSSOptions {
 
     private boolean CDNMode = false;
 
-    /**
-     * Get the value of cdnMode
-     *
-     * @return the value of cdnMode
-     */
-    public boolean isCdnMode() {
+    public boolean isCDNMode() {
         return CDNMode;
     }
 
+    public void setCDNMode(boolean CDNMode) {
+        this.CDNMode = CDNMode;
+    }
+
     /**
-     * Set the value of cdnMode
-     *
-     * @param cdnMode new value of cdnMode
+     * If true, all used CSS will be merged into a single file or string.
      */
-    public void setCdnMode(boolean cdnMode) {
-        this.CDNMode = cdnMode;
+    private boolean mergeAll;
+
+    /**
+     * Get the value of mergeAll
+     *
+     * @return the value of mergeAll
+     */
+    public boolean isMergeAll() {
+        return mergeAll;
+    }
+
+    /**
+     * Set the value of mergeAll
+     *
+     * @param mergeAll new value of mergeAll
+     */
+    public void setMergeAll(boolean mergeAll) {
+        this.mergeAll = mergeAll;
     }
 
     private boolean UseStaticHTMLFromWebPage = true;

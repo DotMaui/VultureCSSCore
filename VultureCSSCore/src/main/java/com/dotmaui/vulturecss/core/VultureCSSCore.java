@@ -94,7 +94,7 @@ public class VultureCSSCore {
             throw new Exception("It is currently not possible to specify URLs and strings simultaneously");
         }
 
-        if (this.options.isCdnMode() && Functions.isNullOrWhitespace(this.options.getDotMauiApiKey())) {
+        if (this.options.isCDNMode() && Functions.isNullOrWhitespace(this.options.getDotMauiApiKey())) {
             throw new Exception("Specify a valid API key");
         }
 
@@ -147,6 +147,23 @@ public class VultureCSSCore {
 
             }
 
+            if (this.options.isMergeAll()) {
+
+                String merged_css = "";
+
+                for (Carcass c : carcasses) {
+                    merged_css = Functions.concat(merged_css, c.getUsedCSS());
+                }
+
+                carcasses = new ArrayList<>();
+
+                Carcass c = new Carcass();
+                c.setUsedCSS(merged_css);
+
+                carcasses.add(c);
+
+            }
+
         } else if (!"".equals(this.html)) {
 
             Carcass carcass = new Carcass();
@@ -172,7 +189,7 @@ public class VultureCSSCore {
         }
 
         // If CDN mode is enabled, I cycle through all the carcasses and save each CSS in a file on the CDN.
-        if (this.options.isCdnMode()) {
+        if (this.options.isCDNMode()) {
 
             DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(this.options.getDotMauiApiKey());
             client.setMode(1);
@@ -191,7 +208,7 @@ public class VultureCSSCore {
                 JSONObject obj = new JSONObject(responseCdn);
 
                 String fileUrl = obj.getString("url");
-                
+
                 c.setCdnUrl(fileUrl);
 
             }

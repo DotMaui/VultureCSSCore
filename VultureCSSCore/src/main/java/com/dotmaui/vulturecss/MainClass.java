@@ -26,12 +26,14 @@ package com.dotmaui.vulturecss;
 import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 import com.dotmaui.vulturecss.core.VultureCSSCore;
 import com.dotmaui.vulturecss.models.Carcass;
+import com.dotmaui.vulturecss.utils.Functions;
 import com.dotmaui.vulturecss.utils.Interface;
 import com.dotmaui.vulturecss.utils.MinifyWithYUI;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -98,12 +100,10 @@ public class MainClass {
                 .withDescription("API key to use the services of dotmaui.com. Required to save CSS files to the CDN.")
                 .create("apikey");
 
-        /*Option save_to_cdn = OptionBuilder.withArgName("cdn mode")
-                .hasArg()
-                .withDescription("If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.")
-                .create("cdn");
-         */
         Option save_to_cdn = new Option("cdn", "If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.");
+        
+        Option merge_all = new Option("merge", "If set, all used CSS will be merged into a single file or string.");
+        
         options.addOption(help);
         options.addOption(css);
         options.addOption(html);
@@ -111,6 +111,7 @@ public class MainClass {
         options.addOption(destination_folder);
         options.addOption(dotmaui_apikey);
         options.addOption(save_to_cdn);
+        options.addOption(merge_all);
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
@@ -132,7 +133,7 @@ public class MainClass {
         String final_result;
 
         // If only the html is specified, 
-        // alle the CSS files found within the page will be checked.
+        // alle the CSS files found within the page will be processed.
         if (!cmd.hasOption("css")) {
 
             String html_to_compare = cmd.getOptionValue("html");
@@ -140,6 +141,7 @@ public class MainClass {
             VultureCSSCore v = new VultureCSSCore();
 
             try {
+                
                 java.net.URL u = new java.net.URL(html_to_compare);
                 v.setHtmlUrl(u);
 
@@ -148,6 +150,24 @@ public class MainClass {
             }
 
             List<Carcass> carcasses = v.Process();
+            
+            if (cmd.hasOption("merge")) {
+                
+                String merged_css = "";
+                
+                for (Carcass c : carcasses) {
+                    merged_css = Functions.concat(merged_css, c.getUsedCSS());
+                }
+                
+                 carcasses = new ArrayList<>();
+                 
+                 Carcass c = new Carcass();
+                 c.setUsedCSS(merged_css);
+                 c.setPath("/merged.css");
+                 
+                 carcasses.add(c);
+                 
+            }
 
             for (Carcass c : carcasses) {
 
