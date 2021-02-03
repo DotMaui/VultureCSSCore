@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,6 @@ package com.dotmaui.vulturecss.utils;
 
 import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 
-/**
- *
- * @author .Maui
- */
 public class MinifyWithDotMauiApi {
     
     public static String Process(String css) throws Exception {

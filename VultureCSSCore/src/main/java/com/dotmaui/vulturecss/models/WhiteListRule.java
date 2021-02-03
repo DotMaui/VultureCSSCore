@@ -21,37 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.dotmaui.vulturecss.utils;
+package com.dotmaui.vulturecss.models;
 
-public class Functions {
+public class WhiteListRule {
 
-    // https://stackoverflow.com/questions/8476588/java-equivalent-of-c-sharp-string-isnullorempty-and-string-isnullorwhitespace
-    public static boolean isNullOrEmpty(String s) {
-        return s == null || s.length() == 0;
+    public static final int CONTAINING = 0;
+    public static final int EQUALS = 1;
+
+    private String Selector;
+
+    /**
+     * Get the value of Selector
+     *
+     * @return the value of Selector
+     */
+    public String getSelector() {
+        return Selector;
     }
 
-    public static boolean isNullOrWhitespace(String s) {
-        return s == null || isWhitespace(s);
-
+    /**
+     * Set the value of Selector
+     *
+     * @param Selector new value of Selector
+     */
+    public void setSelector(String Selector) {
+        this.Selector = Selector;
     }
 
-    private static boolean isWhitespace(String s) {
-        int length = s.length();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-                if (!Character.isWhitespace(s.charAt(i))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+    private int type = CONTAINING;
+
+    /**
+     * Get the value of type
+     *
+     * @return the value of type
+     */
+    public int getType() {
+        return type;
     }
 
-    // Function to concatenate two Strings in Java using <tt>StringBuilder</tt>
-    // https://www.techiedelight.com/concatenate-two-strings-java/
-    public static String concat(String s1, String s2) {
-        return new StringBuilder(s1).append(s2).toString();
+    /**
+     * Set the value of type
+     *
+     * @param type new value of type
+     */
+    public void setType(int type) {
+        this.type = type;
     }
 
 }

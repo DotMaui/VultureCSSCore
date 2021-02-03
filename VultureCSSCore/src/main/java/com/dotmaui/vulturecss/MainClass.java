@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com
+ * Copyright 2021 .Maui | dotmaui.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,12 +77,12 @@ public class MainClass {
 
         Option css = OptionBuilder.withArgName("file or url")
                 .hasArg()
-                .withDescription("The CSS to be optimized. It can be a path or a url.")
+                .withDescription("The CSS to be optimized. It can be a path or a URL.")
                 .create("css");
 
         Option html = OptionBuilder.withArgName("file or url")
                 .hasArg()
-                .withDescription("The HTML to compare. It can be a path or a url.")
+                .withDescription("The HTML to be analyzed. It can be a path or a URL.")
                 .create("html");
 
         Option output = OptionBuilder.withArgName("file")

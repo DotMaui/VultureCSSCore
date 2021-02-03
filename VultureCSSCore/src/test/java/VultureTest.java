@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,10 @@
 import com.dotmaui.vulturecss.core.VultureCSSCore;
 import com.dotmaui.vulturecss.models.Carcass;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
+import com.dotmaui.vulturecss.models.WhiteListRule;
 import java.net.URL;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class VultureTest {
@@ -34,23 +37,49 @@ public class VultureTest {
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        // TODO code application logic here
+        
+        Test1();
+        Test2();
+        
+    }
 
-        URL url = new URL("https://api.dotmaui.com");
-                
-        VultureCSSOptions opt = new VultureCSSOptions();
-        opt.setUseStaticHTMLFromWebPage(false);
-        opt.setCDNMode(false);
-        opt.setMergeAll(true);
-        opt.setDotMauiApiKey("");
-        VultureCSSCore v = new VultureCSSCore();
-        v.setHtmlUrl(url);
-        v.setOptions(opt);
+    private static void Test1() throws Exception {
+
+        VultureCSSCore vulturecss_core = new VultureCSSCore();
+        VultureCSSOptions vulturecss_options = new VultureCSSOptions();
+
+        WhiteListRule wl = new WhiteListRule();
+        wl.setSelector(".not-used-wl p");
+        wl.setType(com.dotmaui.vulturecss.models.WhiteListRule.EQUALS);
+
+        List<WhiteListRule> wlr = new ArrayList<>();
+        wlr.add(wl);
+        vulturecss_options.setWhiteListRules(wlr);
+
+        String html = "<div class=container></div><div class='container red'></div>";
+        String css = ".container{color:green} div{color:gold} .not-used{color:black} .not-used-too{color:black} .not-used-wl p{color:green}";
+
+        vulturecss_core.setHtml(html);
+        vulturecss_core.setCss(css);
+
+        vulturecss_core.setOptions(vulturecss_options);
+        List<Carcass> carcasses = vulturecss_core.Process();
+
+        carcasses.forEach((c) -> {
+            System.out.println(c.getUsedCSS());
+        });
+
+    }
+
+    private static void Test2() throws Exception {
+
+        URL htmlUrl = new URL("https://dotmaui.com");
+        URL cssUrl = new URL("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css");
+        VultureCSSCore v = new VultureCSSCore(cssUrl, htmlUrl);
         List<Carcass> carcasses = v.Process();
 
         carcasses.forEach((c) -> {
-            System.out.println(c.getPath());
-            System.out.println(c.getCdnUrl());
+            System.out.println(c.getUsedCSS());
         });
 
     }

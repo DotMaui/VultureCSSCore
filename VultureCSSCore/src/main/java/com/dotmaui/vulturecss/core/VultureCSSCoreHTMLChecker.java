@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,14 @@
  */
 package com.dotmaui.vulturecss.core;
 
+import com.dotmaui.vulturecss.models.VultureCSSOptions;
+import com.dotmaui.vulturecss.models.WhiteListRule;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CSSWritableList;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -43,23 +46,18 @@ public class VultureCSSCoreHTMLChecker {
     private final List<String> pseudoClasses = new ArrayList<>();
     private final List<String> pseudoClassesWithbrackets = new ArrayList<>();
     private final Document htmlDocument;
-
-    /**
-     * Get the value of documento
-     *
-     * @return the value of documento
-     */
-    public Document getDocumento() {
-        return htmlDocument;
-    }
+    private final VultureCSSOptions options;
+      
 
     /**
      * @param html
+     * @param options
      */
-    public VultureCSSCoreHTMLChecker(String html) {
+    public VultureCSSCoreHTMLChecker(String html, VultureCSSOptions options) {
 
         this.htmlDocument = Jsoup.parse(html);
-
+        this.options = options;
+        
         /**
          * Jsoup raises an exception when pseudo-classes and pseudo-elements are
          * present in the selector. To avoid this I exclude pseudo-classes and
@@ -204,7 +202,7 @@ public class VultureCSSCoreHTMLChecker {
     public boolean isSelectorUsed(String selector) {
 
         // Ownership classes, like :-moz go wrong. You can remove them by setting removeOwnershipClasses to true.    
-        if (this.removeVendorPseudoClasses == false
+        if (this.removeVendorPseudoClasses == true
                 && (selector.contains("::-moz")
                 || selector.contains("::-webkit")
                 || selector.contains("::-ms-"))) {
@@ -227,6 +225,23 @@ public class VultureCSSCoreHTMLChecker {
             newSelector = newSelector.substring(0, newSelector.length() - 2);
         }
 
+        // Whitelist.
+        if (this.options.getWhiteListRules() != null) {
+            
+            for (Iterator it = this.options.getWhiteListRules().iterator(); it.hasNext();) {
+                
+                WhiteListRule whiteListRule = (WhiteListRule) it.next();
+                
+                if (whiteListRule.getType() == WhiteListRule.CONTAINING &&  selector.toLowerCase().contains(whiteListRule.getSelector().toLowerCase())) {
+                    return true;
+                }
+                else if (whiteListRule.getType() == WhiteListRule.EQUALS && whiteListRule.getSelector().toLowerCase().equals(selector.toLowerCase())) {
+                    return true;
+                }
+            }
+            
+        }
+        
         Elements elm;
 
         // If the search raises an exception, the rule is considered valid 

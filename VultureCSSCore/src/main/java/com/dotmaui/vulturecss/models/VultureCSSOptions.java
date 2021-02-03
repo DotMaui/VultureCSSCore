@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,8 @@
 package com.dotmaui.vulturecss.models;
 
 import com.helger.css.ECSSVersion;
+import java.util.List;
 
-/**
- *
- * @author .Maui
- */
 public class VultureCSSOptions {
 
     private String DotMauiApiKey = null;
@@ -146,6 +143,26 @@ public class VultureCSSOptions {
      */
     public void setECSSVersion(ECSSVersion ECSSVersion) {
         this.ECSSVersion = ECSSVersion;
+    }
+
+    private List<WhiteListRule> WhiteListRules;
+
+    /**
+     * Get the value of WhiteListRules
+     *
+     * @return the value of WhiteListRules
+     */
+    public List<WhiteListRule> getWhiteListRules() {
+        return WhiteListRules;
+    }
+
+    /**
+     * Set the value of WhiteListRules
+     *
+     * @param WhiteListRules new value of WhiteListRules
+     */
+    public void setWhiteListRules(List<WhiteListRule>  WhiteListRules) {
+        this.WhiteListRules = WhiteListRules;
     }
 
 }

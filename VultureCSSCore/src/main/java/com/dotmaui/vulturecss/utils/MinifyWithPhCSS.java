@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,6 @@ import com.helger.css.reader.CSSReader;
 import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
 
-/**
- * 
- * @author .Maui
- */
 public class MinifyWithPhCSS {
 
     public static String Process(String css) throws Exception {

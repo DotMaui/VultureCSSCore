@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 .Maui | dotmaui.com.
+ * Copyright 2021 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-/**
- *
- * @author .Maui
- */
 public final class MinifyWithYUI {
 
     public static String Process(String css) {
