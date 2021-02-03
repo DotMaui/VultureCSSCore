@@ -4,7 +4,7 @@ Remove dead css from your stylesheets
 VultureCSSCore analyze the HTML code and the CSS code and remove all the unused CSS code. All this, of course, will be done without changing the websites' appearance. 
 It can be used via JAR file, website or via API.
 
-The current version is 0.2.6 BETA.
+The current version is 0.2.7 BETA.
 
 ## Usage
 
@@ -18,7 +18,11 @@ java -jar VultureCSSCore.jar -css https://example.com/style.css -html https://ex
 URL htmlUrl = new URL("https://dotmaui.com");
 URL cssUrl = new URL("https://dotmaui.com/style.css");
 VultureCSSCore v = new VultureCSSCore(cssUrl, htmlUrl);
-String used_css = v.Process();
+List<Carcass> carcasses = v.Process();
+
+carcasses.forEach((c) -> {
+    System.out.println(c.getUsedCSS());
+});
 ```
 ###### Or specify only one HTML page, all included CSS files will be processed.
 ```
@@ -62,6 +66,8 @@ carcasses.forEach((c) -> {
 If you don't use JAVA in your project you can use VultureCSS through API. [View the complete documentation](https://api.dotmaui.com/vulturecss/).
 
 Or use VultureCSS via the website: [vulturecss.dotmaui.com](https://vulturecss.dotmaui.com/)
+
+For bug reports, support or customization requests you can also contact us via Telegram at [@DotMaui](https://t.me/DotMaui).
 
 If you like this project you can support it by offering us a coffee. [You can donate through PayPal](https://dotmaui.com/donate/).
 
