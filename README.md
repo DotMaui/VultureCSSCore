@@ -1,7 +1,7 @@
-# VultureCSSCore
+# VultureCSS Core
 Remove dead css from your stylesheets
 
-VultureCSSCore analyze the HTML code and the CSS code and remove all the unused CSS code. All this, of course, will be done without changing the websites' appearance. 
+VultureCSS Core analyze the HTML code and the CSS code and remove all the unused CSS code. All this, of course, will be done without changing the websites' appearance. 
 It can be used via JAR file, website or via API.
 
 The current version is 0.2.7 BETA.
@@ -64,8 +64,6 @@ carcasses.forEach((c) -> {
 ```
 
 If you don't use JAVA in your project you can use VultureCSS through API. [View the complete documentation](https://api.dotmaui.com/vulturecss/).
-
-Or use VultureCSS via the website: [vulturecss.dotmaui.com](https://vulturecss.dotmaui.com/)
 
 For bug reports, support or customization requests you can also contact us via Telegram at [@DotMaui](https://t.me/DotMaui).
 
