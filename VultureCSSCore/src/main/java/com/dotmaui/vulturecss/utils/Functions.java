@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 .Maui | dotmaui.com.
+ * Copyright 2023 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,5 +53,5 @@ public class Functions {
     public static String concat(String s1, String s2) {
         return new StringBuilder(s1).append(s2).toString();
     }
-
+    
 }

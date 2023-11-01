@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 .Maui | dotmaui.com.
+ * Copyright 2023 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package com.dotmaui.vulturecss.core;
 
 import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.ExtractAllStyleSheetsUrls;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetRulesFromString;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadFromUrl;
 import static com.dotmaui.vulturecss.utils.Interface.DownloadRenderedPage;
 import com.dotmaui.vulturecss.models.Carcass;
@@ -32,6 +33,17 @@ import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import com.dotmaui.vulturecss.utils.Functions;
 import com.dotmaui.vulturecss.utils.Interface;
 import com.dotmaui.vulturecss.utils.MinifyWithPhCSS;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.css.ECSSVersion;
+import com.helger.css.decl.CSSImportRule;
+import com.helger.css.decl.CSSMediaRule;
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.decl.CascadingStyleSheet;
+import com.helger.css.decl.ICSSTopLevelRule;
+import com.helger.css.writer.CSSWriter;
+import com.helger.css.writer.CSSWriterSettings;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,9 +122,11 @@ public class VultureCSSCore {
 
         if (this.htmlUrl != null) {
 
-            this.html = (this.options.isUseStaticHTMLFromWebPage())
-                    ? DownloadFromUrl(this.htmlUrl)
-                    : DownloadRenderedPage(this.htmlUrl);
+            if (this.options.isUseStaticHTMLFromWebPage()) {
+                this.html = DownloadFromUrl(this.htmlUrl);
+            } else {
+                this.html = DownloadRenderedPage(this.htmlUrl);
+            }
 
             if (this.html == null) {
                 throw new Exception("The download of the HTML file has failed");
@@ -198,7 +212,7 @@ public class VultureCSSCore {
 
             for (Carcass c : carcasses) {
 
-                String file_name = "c" + i + ".css";
+                String file_name = "c".concat(String.valueOf(i)).concat(".css");
 
                 i++;
 
@@ -216,6 +230,84 @@ public class VultureCSSCore {
         }
 
         return carcasses;
+
+    }
+
+    /**
+     *
+     * @param urls
+     * @return
+     * @throws java.net.MalformedURLException
+     */
+    public static String mergeAndOptimizeCSSFromUrls(List<String> urls) throws MalformedURLException, IOException, Exception {
+
+        String mergedCSS = "";
+
+        // I merge all the files into one string
+        for (String u : urls) {
+
+            String tempCSS = DownloadFromUrl(new URL(u));
+            mergedCSS = mergedCSS.concat(tempCSS);
+
+        }
+
+        CascadingStyleSheet newStyleSheetWithAllDeclarationsFinal = new CascadingStyleSheet();
+
+        ICommonsList<ICSSTopLevelRule> rules = GetRulesFromString(mergedCSS);
+
+        CascadingStyleSheet newStyleSheetWithAllDeclarations = VultureCSSCoreMergify.MergeRules(rules);
+
+        ICommonsList<ICSSTopLevelRule> mergedRules = newStyleSheetWithAllDeclarations.getAllRules();
+
+        int importRulesIndex = 0;
+
+        for (ICSSTopLevelRule ruleCompare : mergedRules) {
+
+            if (ruleCompare instanceof CSSMediaRule) {
+
+                CSSMediaRule optimizedMediaRule = VultureCSSCoreOptimize.OptimizeMediaRule((CSSMediaRule) ruleCompare);
+                newStyleSheetWithAllDeclarationsFinal.addRule(optimizedMediaRule);
+
+            } else if (ruleCompare instanceof CSSStyleRule) {
+
+                CSSStyleRule cssStyleRuleToOptimize = (CSSStyleRule) ruleCompare;
+                List<CSSStyleRule> cssStyleRuleList = new ArrayList<>();
+                cssStyleRuleList.add(cssStyleRuleToOptimize);
+
+                List<CSSStyleRule> optimizedCSSStyleRuleList = VultureCSSCoreOptimize.OptimizeCSSStyleRules(cssStyleRuleList);
+
+                for (ICSSTopLevelRule optimizedRuleCompare : optimizedCSSStyleRuleList) {
+
+                    newStyleSheetWithAllDeclarationsFinal.addRule(optimizedRuleCompare);
+
+                }
+
+            } else if (ruleCompare instanceof CSSImportRule) {
+
+                newStyleSheetWithAllDeclarationsFinal.addImportRule(importRulesIndex, (CSSImportRule) ruleCompare);
+
+                importRulesIndex++;
+
+            } else if (ruleCompare != null) {
+
+                // CSSViewportRule and others.
+                newStyleSheetWithAllDeclarationsFinal.addRule(ruleCompare);
+
+            } else {
+
+                throw new java.lang.UnsupportedOperationException();
+
+            }
+        }
+
+        final CSSWriterSettings aSettings;
+        aSettings = new CSSWriterSettings(ECSSVersion.LATEST, false);
+
+        final CSSWriter aWriter = new CSSWriter(aSettings);
+
+        aWriter.setHeaderText("");
+
+        return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
 
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 .Maui | dotmaui.com.
+ * Copyright 2023 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,29 +46,32 @@ public class DotMauiCSSMinifyClient {
 
     public String minifyCSSFromUrl(String url) throws UnsupportedEncodingException, Exception {
 
-        String urlParameters = "apikey=" + this.apiKey + "&url=" + URLEncoder.encode(url, "UTF-8");
-        urlParameters += setUrlParameters();
+        String urlParameters = "apikey=".concat(this.apiKey)
+                .concat("&url=")
+                .concat(URLEncoder.encode(url, "UTF-8"));
+        
+        urlParameters = urlParameters.concat( setUrlParameters());
 
         return apiRequest(this.endpoint, urlParameters);
     }
 
     public String minifyCSSFromUrls(List<String> urls) throws UnsupportedEncodingException, Exception {
 
-        String urlParameters = "apikey=" + this.apiKey;
+        String urlParameters = "apikey=".concat(this.apiKey);
 
         for (String url : urls) {
-            urlParameters += "&url[]=" + URLEncoder.encode(url, "UTF-8");
+            urlParameters = urlParameters.concat("&url[]=".concat( URLEncoder.encode(url, "UTF-8")));
         }
 
-        urlParameters += setUrlParameters();
+        urlParameters = urlParameters.concat( setUrlParameters());
 
         return apiRequest(this.endpoint, urlParameters);
     }
 
     public String minifyCSSFromString(String css) throws UnsupportedEncodingException, Exception {
 
-        String urlParameters = "apikey=" + this.apiKey + "&css=" + URLEncoder.encode(css, "UTF-8");
-        urlParameters += setUrlParameters();
+        String urlParameters = "apikey=".concat( this.apiKey).concat("&css=").concat(URLEncoder.encode(css, "UTF-8"));
+        urlParameters = urlParameters.concat( setUrlParameters());
 
         return apiRequest(this.endpoint, urlParameters);
     }
@@ -78,29 +81,29 @@ public class DotMauiCSSMinifyClient {
         String otherParams = "";
 
         if (!this.removeUrlQuotes) {
-            otherParams += "&removeurlquotes=false";
+            otherParams = otherParams.concat("&removeurlquotes=false");
         }
 
         if (!this.removeComments) {
-            otherParams += "&removecomments=false";
+            otherParams = otherParams.concat("&removecomments=false");
         }
 
         if (this.sortProperties) {
-            otherParams += "&sortproperties=true";
+            otherParams = otherParams.concat("&sortproperties=true");
         }
 
         if (this.wrapCSSLines) {
-            otherParams += "&wrapcsslines=true";
+            otherParams = otherParams.concat("&wrapcsslines=true");
         }
 
         if (this.mode == 1) {
 
-            otherParams += "&mode=cdn";
+            otherParams = otherParams.concat("&mode=cdn");
 
             if (this.name == null || !this.name.toLowerCase().endsWith(".css")) {
                 throw new Exception("The file name is mandatory and must end with '.css'");
             } else {
-                otherParams += "&name=" + this.name;
+                otherParams = otherParams.concat("&name=").concat(this.name);
             }
 
         }

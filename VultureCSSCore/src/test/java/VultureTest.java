@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 .Maui | dotmaui.com.
+ * Copyright 2023 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,11 @@ public class VultureTest {
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        
-        Test1();
-        Test2();
-        
+
+        //Test1();
+        //Test2();
+        Test3();
+
     }
 
     private static void Test1() throws Exception {
@@ -81,6 +82,19 @@ public class VultureTest {
         carcasses.forEach((c) -> {
             System.out.println(c.getUsedCSS());
         });
+
+    }
+
+    private static void Test3() throws Exception {
+
+        List<String> urls = new ArrayList<>();
+        urls.add("http://135.125.102.94/css/a.css");
+        urls.add("http://135.125.102.94/css/b.css");
+        urls.add("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css?v=2");
+
+        String result = VultureCSSCore.mergeAndOptimizeCSSFromUrls(urls);
+
+        System.out.println(result);
 
     }
 

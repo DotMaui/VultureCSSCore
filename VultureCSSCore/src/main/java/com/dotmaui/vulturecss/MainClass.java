@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 .Maui | dotmaui.com
+ * Copyright 2023 .Maui | dotmaui.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -133,7 +133,7 @@ public class MainClass {
         String final_result;
 
         // If only the html is specified, 
-        // alle the CSS files found within the page will be processed.
+        // all the CSS files found within the page will be processed.
         if (!cmd.hasOption("css")) {
 
             String html_to_compare = cmd.getOptionValue("html");
