@@ -27,15 +27,12 @@ import com.dotmaui.vulturecss.models.CarcassDeclaration;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSMediaRule;
+import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.ICSSTopLevelRule;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author mauri
- */
 public class VultureCSSCoreOptimize {
 
     public static CSSMediaRule OptimizeMediaRule(CSSMediaRule cssMediaRule) {
@@ -65,17 +62,13 @@ public class VultureCSSCoreOptimize {
 
     }
 
-
     public static List<CSSStyleRule> OptimizeCSSStyleRules(List<CSSStyleRule> rules) {
 
         List<CSSStyleRule> allStyleRules = new ArrayList<>();
 
-        
-        
         for (ICSSTopLevelRule rule : rules) {
 
             CSSStyleRule cssStyleRule = (CSSStyleRule) rule;
-                       
 
             // Ex: [color: red, color:orange, ...]
             List<CSSDeclaration> initialDeclarations = cssStyleRule.getAllDeclarations();
@@ -98,15 +91,12 @@ public class VultureCSSCoreOptimize {
                     isImportant = true;
                 }
 
-                
-                
                 for (CarcassDeclaration carcassDeclaration : carcassDeclarations) {
 
                     // Ex: color
                     String carcassSelector = carcassDeclaration.getDeclaration().getAsCSSString().split(":")[0].trim();
 
                     //System.out.println( selector  + " == " + carcassSelector );
-                    
                     if (selector.equals(carcassSelector)) {
 
                         if (isImportant) {
@@ -125,19 +115,17 @@ public class VultureCSSCoreOptimize {
                     carcassDeclarations.add(new CarcassDeclaration(isImportant, selector, initialDeclarations.get(i)));
 
                 }
-                
-               // System.out.println( carcassDeclarations.size()  + " == "  );
 
             }
 
             CSSStyleRule newCssStyleRule = new CSSStyleRule();
-            newCssStyleRule.addSelector(cssStyleRule.getSelectorAtIndex(0));
+
+            for (CSSSelector selector : cssStyleRule.getAllSelectors()) {
+                newCssStyleRule.addSelector(selector);
+            }
 
             for (CarcassDeclaration carcassDeclaration : carcassDeclarations) {
-
                 newCssStyleRule.addDeclaration(carcassDeclaration.getDeclaration());
-
-                //System.out.println("carcassDeclaration: " + carcassDeclaration.getDeclaration().getAsCSSString());
             }
 
             allStyleRules.add(newCssStyleRule);

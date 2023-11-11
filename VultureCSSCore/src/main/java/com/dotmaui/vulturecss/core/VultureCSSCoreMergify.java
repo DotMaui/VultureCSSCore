@@ -27,6 +27,7 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSImportRule;
 import com.helger.css.decl.CSSMediaRule;
+import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CascadingStyleSheet;
 import com.helger.css.decl.ICSSTopLevelRule;
@@ -91,7 +92,14 @@ public class VultureCSSCoreMergify {
             } else if (rule instanceof CSSStyleRule) {
 
                 CSSStyleRule cssStyleRule = (CSSStyleRule) rule;
-                String allSelector = cssStyleRule.getAllSelectors().get(0).getAsCSSString();
+                String allSelector = "";
+
+                for (CSSSelector selector : cssStyleRule.getAllSelectors()) {
+                    allSelector = allSelector.concat(selector.getAsCSSString()).concat(",");
+                }
+
+                allSelector = allSelector.substring(0, allSelector.length() - 1);
+
 
                 if (alreadyInserted.contains(allSelector) == false) {
 
@@ -103,8 +111,14 @@ public class VultureCSSCoreMergify {
 
                             CSSStyleRule cssStyleRuleCompare = (CSSStyleRule) ruleCompare;
 
-                            String allSelectorCompare = cssStyleRuleCompare.getAllSelectors().get(0).getAsCSSString();
+                            String allSelectorCompare = "";//cssStyleRuleCompare.getAllSelectors().get(0).getAsCSSString();
 
+                            for (CSSSelector selector : cssStyleRuleCompare.getAllSelectors()) {
+                                allSelectorCompare = allSelectorCompare.concat(selector.getAsCSSString()).concat(",");
+                            }
+
+                            allSelectorCompare = allSelectorCompare.substring(0, allSelectorCompare.length() - 1);
+ 
                             int endCulumnCompare = cssStyleRuleCompare.getDeclarationAtIndex(0).getSourceLocation().getLastTokenEndColumnNumber();
 
                             if (allSelector.equals(allSelectorCompare) && endCulumnCompare > endCulumn) {

@@ -306,8 +306,8 @@ public class VultureCSSCore {
         final CSSWriter aWriter = new CSSWriter(aSettings);
 
         aWriter.setHeaderText("");
-
-        return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
+        return aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal);
+        //return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
 
     }
 
