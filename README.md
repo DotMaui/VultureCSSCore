@@ -4,7 +4,7 @@ Remove dead css from your stylesheets
 VultureCSS Core analyze the HTML code and the CSS code and remove all the unused CSS code. All this, of course, will be done without changing the websites' appearance. 
 It can be used via JAR file or via API.
 
-The current version is 0.2.8 BETA.
+The current version is 0.2.9 BETA.
 
 ## Usage
 
@@ -62,6 +62,18 @@ carcasses.forEach((c) -> {
     System.out.println(c.getCdnUrl());
 });
 ```
+
+###### Merge and optimize CSS from urls
+```
+List<String> urls = new ArrayList<>();
+urls.add("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+urls.add("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css?v=2");
+
+String result = VultureCSSCore.mergeAndOptimizeCSSFromUrls(urls);
+
+System.out.println(result);
+```
+
 
 If you don't use JAVA in your project you can use VultureCSS through API. [View the complete documentation](https://api.dotmaui.com/vulturecss/).
 
