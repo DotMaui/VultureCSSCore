@@ -250,7 +250,7 @@ public class VultureCSSCore {
             mergedCSS = mergedCSS.concat(tempCSS);
 
         }
-
+        
         CascadingStyleSheet newStyleSheetWithAllDeclarationsFinal = new CascadingStyleSheet();
 
         ICommonsList<ICSSTopLevelRule> rules = GetRulesFromString(mergedCSS);
@@ -306,8 +306,8 @@ public class VultureCSSCore {
         final CSSWriter aWriter = new CSSWriter(aSettings);
 
         aWriter.setHeaderText("");
-        return aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal);
-        //return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
+        
+        return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
 
     }
 

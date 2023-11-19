@@ -26,6 +26,7 @@ package com.dotmaui.vulturecss.utils;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +46,9 @@ public class Interface {
      *
      * @param url
      * @return
+     * @throws java.io.IOException
      */
-    public static String DownloadFromUrl(URL url) {
+    public static String DownloadFromUrl(URL url) throws IOException {
 
         InputStream is = null;
         BufferedReader br;
@@ -72,6 +74,10 @@ public class Interface {
             } catch (IOException ioe) {
                 // nothing to see here
             }
+        }
+
+        if (content.startsWith("ï»¿")) {
+            content = content.replace("ï»¿", "");
         }
 
         return content;
@@ -123,8 +129,7 @@ public class Interface {
             if (is == null) {
                 return null;
             }
-            try (InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader reader = new BufferedReader(isr)) {
+            try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
             }
         }

@@ -87,8 +87,7 @@ public class VultureTest {
 
     private static void Test3() throws Exception {
 
-        List<String> urls = new ArrayList<>();
-        //urls.add("http://135.125.102.94/css/a.css");
+        List<String> urls = new ArrayList<>();        
         urls.add("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
         urls.add("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css?v=2");
 

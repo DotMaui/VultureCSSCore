@@ -100,8 +100,7 @@ public class VultureCSSCoreMergify {
 
                 allSelector = allSelector.substring(0, allSelector.length() - 1);
 
-
-                if (alreadyInserted.contains(allSelector) == false) {
+                if (alreadyInserted.contains(allSelector) == false && cssStyleRule.getDeclarationAtIndex(0) != null) {
 
                     int endCulumn = cssStyleRule.getDeclarationAtIndex(0).getSourceLocation().getLastTokenEndColumnNumber();
 
@@ -118,19 +117,25 @@ public class VultureCSSCoreMergify {
                             }
 
                             allSelectorCompare = allSelectorCompare.substring(0, allSelectorCompare.length() - 1);
- 
-                            int endCulumnCompare = cssStyleRuleCompare.getDeclarationAtIndex(0).getSourceLocation().getLastTokenEndColumnNumber();
 
-                            if (allSelector.equals(allSelectorCompare) && endCulumnCompare > endCulumn) {
+                            // If null is an empty rule, ex. .maui {}
+                            if (cssStyleRuleCompare.getDeclarationAtIndex(0) != null) {
 
-                                alreadyInserted.add(allSelector);
+                                int endCulumnCompare = cssStyleRuleCompare.getDeclarationAtIndex(0).getSourceLocation().getLastTokenEndColumnNumber();
 
-                                for (CSSDeclaration declaration : cssStyleRuleCompare.getAllDeclarations()) {
-                                    cssStyleRule.addDeclaration(declaration);
+                                if (allSelector.equals(allSelectorCompare) && endCulumnCompare > endCulumn) {
+
+                                    alreadyInserted.add(allSelector);
+
+                                    for (CSSDeclaration declaration : cssStyleRuleCompare.getAllDeclarations()) {
+                                        cssStyleRule.addDeclaration(declaration);
+
+                                    }
 
                                 }
 
                             }
+                            
                         }
 
                     }
