@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 .Maui | dotmaui.com.
+ * Copyright 2024 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

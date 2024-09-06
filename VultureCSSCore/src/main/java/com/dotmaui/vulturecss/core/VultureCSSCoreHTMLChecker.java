@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 .Maui | dotmaui.com.
+ * Copyright 2024 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -182,6 +182,9 @@ public class VultureCSSCoreHTMLChecker {
         // Extra.
         pseudoClasses.add(":-ms-input-placeholder");
 
+        pseudoClassesWithbrackets.add(":where()");
+        pseudoClassesWithbrackets.add(":nth-col()");
+        pseudoClassesWithbrackets.add(":nth-last-col()");
         pseudoClassesWithbrackets.add(":dir()");
         pseudoClassesWithbrackets.add(":lang()");
         pseudoClassesWithbrackets.add(":nth-of-type()");
@@ -189,6 +192,9 @@ public class VultureCSSCoreHTMLChecker {
         pseudoClassesWithbrackets.add(":nth-last-child()");
         pseudoClassesWithbrackets.add(":nth-child()");
         pseudoClassesWithbrackets.add(":not()");
+        pseudoClassesWithbrackets.add("::where()");
+        pseudoClassesWithbrackets.add("::nth-col()");
+        pseudoClassesWithbrackets.add(":nth-last-col()");
         pseudoClassesWithbrackets.add("::dir()");
         pseudoClassesWithbrackets.add("::lang()");
         pseudoClassesWithbrackets.add("::nth-of-type()");
