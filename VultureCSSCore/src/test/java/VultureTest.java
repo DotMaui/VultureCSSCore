@@ -26,7 +26,6 @@ import com.dotmaui.vulturecss.models.Carcass;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import com.dotmaui.vulturecss.models.WhiteListRule;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +39,8 @@ public class VultureTest {
 
         //Test1();
         //Test2();
-        Test3();
-
+        //Test3();
+        Test4();
     }
 
     private static void Test1() throws Exception {
@@ -87,13 +86,23 @@ public class VultureTest {
 
     private static void Test3() throws Exception {
 
-        List<String> urls = new ArrayList<>();        
+        List<String> urls = new ArrayList<>();
         urls.add("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
         urls.add("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css?v=2");
 
         String result = VultureCSSCore.mergeAndOptimizeCSSFromUrls(urls);
 
         System.out.println(result);
+
+    }
+
+    private static void Test4() throws Exception {
+
+        String css = ".maui{color:red}.maui{font-size:10px}.maui{border:none}.maui a {text-decoration:none}.container{color:green}.container{color:green}";
+        String cssWithMediaQuery = "body{background-color:red}@media screen and (max-width:992px){body{background-color:#00f}}@media screen and (max-width:600px){body{background-color:olive}.maui{font-size:10px}.maui{border:none}}";
+
+        String mergedCss = VultureCSSCore.mergeAndOptimizeCSSFromString(css);
+        System.out.println(mergedCss);
 
     }
 

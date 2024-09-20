@@ -233,27 +233,11 @@ public class VultureCSSCore {
 
     }
 
-    /**
-     *
-     * @param urls
-     * @return
-     * @throws java.net.MalformedURLException
-     */
-    public static String mergeAndOptimizeCSSFromUrls(List<String> urls) throws MalformedURLException, IOException, Exception {
+    private static String mergeAndOptimize(String css) throws Exception {
 
-        String mergedCSS = "";
-
-        // I merge all the files into one string
-        for (String u : urls) {
-
-            String tempCSS = DownloadFromUrl(new URL(u));
-            mergedCSS = mergedCSS.concat(tempCSS);
-
-        }
-        
         CascadingStyleSheet newStyleSheetWithAllDeclarationsFinal = new CascadingStyleSheet();
 
-        ICommonsList<ICSSTopLevelRule> rules = GetRulesFromString(mergedCSS);
+        ICommonsList<ICSSTopLevelRule> rules = GetRulesFromString(css);
 
         CascadingStyleSheet newStyleSheetWithAllDeclarations = VultureCSSCoreMergify.MergeRules(rules);
 
@@ -306,8 +290,42 @@ public class VultureCSSCore {
         final CSSWriter aWriter = new CSSWriter(aSettings);
 
         aWriter.setHeaderText("");
-        
+
         return MinifyWithPhCSS.Process(aWriter.getCSSAsString(newStyleSheetWithAllDeclarationsFinal));
+    }
+
+    /**
+     *
+     * @param urls
+     * @return
+     * @throws java.net.MalformedURLException
+     * @throws Exception
+     */
+    public static String mergeAndOptimizeCSSFromUrls(List<String> urls) throws MalformedURLException, Exception {
+
+        String mergedCSS = "";
+
+        // I merge all the files into one string
+        for (String u : urls) {
+
+            String tempCSS = DownloadFromUrl(new URL(u));
+            mergedCSS = mergedCSS.concat(tempCSS);
+
+        }
+
+        return mergeAndOptimize(mergedCSS);
+
+    }
+
+    /**
+     *
+     * @param css
+     * @return
+     * @throws java.lang.Exception
+     */
+    public static String mergeAndOptimizeCSSFromString(String css) throws Exception {
+
+        return mergeAndOptimize(css);
 
     }
 

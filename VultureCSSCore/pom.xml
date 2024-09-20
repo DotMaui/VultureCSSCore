@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <mainClass>com.dotmaui.vulturecss.MainClass</mainClass>       
+        <mainClass>com.dotmaui.vulturecss.MainClass</mainClass>
     </properties>
     <pluginRepositories>
         <pluginRepository>
@@ -42,13 +42,15 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-css</artifactId>
-            <version>6.5.0</version>
+            <version>7.0.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-reload4j -->        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -60,11 +62,11 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
+        <!-- https://mvnrepository.com/artifact/org.htmlunit/htmlunit -->
         <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
+            <groupId>org.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>2.70.0</version>
+            <version>4.4.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.yahoo.platform.yui/yuicompressor -->
         <dependency>
@@ -76,7 +78,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.16.2</version>
+            <version>1.18.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.sf.cssbox/jstyleparser -->
         <dependency>
@@ -88,7 +90,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20231013</version>
+            <version>20240303</version>
         </dependency>
 
     </dependencies>
@@ -108,8 +110,10 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -141,7 +145,7 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
     <name>VultureCSS Core</name>
