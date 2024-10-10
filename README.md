@@ -1,10 +1,10 @@
 # VultureCSS Core
 Remove dead css from your stylesheets
 
-VultureCSS Core analyze the HTML code and the CSS code and remove all the unused CSS code. All this, of course, will be done without changing the websites' appearance. 
-It can be used via JAR file or via API.
+VultureCSS Core analyzes the HTML and CSS code to remove all unused CSS. This process is carried out without altering the website's appearance.
+It can be used either as a JAR file or via an API.
 
-The current version is 0.2.2 BETA.
+The current version is 0.3.0 BETA.
 
 ## Usage
 
