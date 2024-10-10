@@ -23,8 +23,8 @@
  */
 package com.dotmaui.vulturecss.core;
 
-import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetUsedRulesFromMediaRule;
-import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetUsedRulesFromSupportsRule;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.getUsedRulesFromMediaRule;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.getUsedRulesFromSupportsRule;
 import com.dotmaui.vulturecss.jstyleparser.VultureCSSWithjStyleParser;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -40,101 +40,106 @@ import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
 import java.io.IOException;
 
+/**
+ * This class provides methods to process and filter CSS based on HTML usage.
+ * The main function reads CSS rules and removes unused rules based on the HTML content provided.
+ * If the initial CSS parsing fails, it attempts to fix it using a secondary parser.
+ * 
+ * @version 1.1
+ * @author .Maui
+ */
 public class CompareCSSHTML {
 
     /**
+     * Processes the provided HTML and CSS to create a cleaned-up CSS stylesheet containing only
+     * the rules used within the HTML.
      *
-     * @param html
-     * @param css
-     * @param options
-     * @return
-     * @throws IOException
+     * @param html     The HTML content to check the CSS against.
+     * @param css      The raw CSS stylesheet to be processed.
+     * @param options  The configuration options for the CSS processing.
+     * @return         A string containing the minimized CSS based on the provided HTML.
+     * @throws IOException If an I/O error occurs during the process.
+     * @throws Exception   If CSS parsing fails or an unexpected error occurs.
      */
     public static String Process(String html, String css, VultureCSSOptions options) throws IOException, Exception {
 
+        // Create a final CSS stylesheet that will contain the used rules.
         CascadingStyleSheet finalCSS = new CascadingStyleSheet();
+
+        // Read the initial CSS stylesheet using ph-css.
         CascadingStyleSheet initialCSS = CSSReader.readFromString(css, ECSSVersion.LATEST);
 
-        // I try to get a correct CSS through jStyleParser.
-        // ph-css returns null in case of unrecoverable errors in CSS. 
-        // jStyleParser instead removes the invalid rule and correctly parsers the rest.
-        // I don't use jStyleParser as the main parser because it seems less updated and with more bugs
+        // If ph-css fails to parse the CSS (returns null), use jStyleParser to correct and re-parse.
         if (initialCSS == null) {
-
-            String new_css = VultureCSSWithjStyleParser.ParseCSS(css);
-            initialCSS = CSSReader.readFromString(new_css, ECSSVersion.LATEST);
-
+            String correctedCSS = VultureCSSWithjStyleParser.ParseCSS(css);
+            initialCSS = CSSReader.readFromString(correctedCSS, ECSSVersion.LATEST);
         }
 
+        // If the CSS is still null, throw an exception indicating a failure to parse the CSS.
         if (initialCSS == null) {
-
             throw new Exception("Failed to parse CSS");
-
         } else if (html != null) {
 
+            // Create an HTML checker instance to verify the usage of CSS rules in the provided HTML.
             VultureCSSCoreHTMLChecker htmlChecker = new VultureCSSCoreHTMLChecker(html, options);
 
+            // Get all the top-level rules from the initial CSS.
             ICommonsList<ICSSTopLevelRule> rules = initialCSS.getAllRules();
 
+            // Iterate over each CSS rule and check if it is used within the HTML content.
             for (int i = 0; i < rules.size(); i++) {
+                ICSSTopLevelRule rule = rules.get(i);
 
-                if (rules.get(i) instanceof CSSStyleRule) {
+                if (rule instanceof CSSStyleRule styleRule) {
 
-                    CSSStyleRule rule = (CSSStyleRule) rules.get(i);
+                    // Check all selectors in the style rule.
+                    ICommonsList<CSSSelector> allSelectors = styleRule.getAllSelectors();
 
-                    ICommonsList<CSSSelector> allSelectors = rule.getAllSelectors();
-
+                    // Handle multiple selectors in a single rule.
                     if (allSelectors.size() > 1) {
-
-                        CSSStyleRule resultRule = htmlChecker.multiSelectorControl((CSSStyleRule) rule);
-
+                        CSSStyleRule resultRule = htmlChecker.multiSelectorControl(styleRule);
                         if (resultRule != null && resultRule.hasDeclarations() && resultRule.hasSelectors()) {
                             finalCSS.addRule(resultRule);
                         }
-
                     } else if (htmlChecker.isSelectorUsed(allSelectors.get(0).getAsCSSString())) {
-                        finalCSS.addRule(rule);
+                        finalCSS.addRule(styleRule);
                     }
 
-                } else if ((rules.get(i) instanceof CSSMediaRule)) {
+                } else if (rule instanceof CSSMediaRule mediaRule) {
 
-                    CSSMediaRule mediaRule = (CSSMediaRule) rules.get(i);
-                    CSSMediaRule finalMediaRule = GetUsedRulesFromMediaRule(mediaRule, htmlChecker);
+                    CSSMediaRule finalMediaRule = getUsedRulesFromMediaRule(mediaRule, htmlChecker);
 
                     if (finalMediaRule != null) {
                         finalCSS.addRule(finalMediaRule);
                     }
 
-                } else if ((rules.get(i) instanceof CSSSupportsRule)) {
+                } else if (rule instanceof CSSSupportsRule supportsRule) {
 
-                    CSSSupportsRule supportsRule = (CSSSupportsRule) rules.get(i);
-                    CSSSupportsRule finalsupportsRule = GetUsedRulesFromSupportsRule(supportsRule, htmlChecker);
+                    CSSSupportsRule finalSupportsRule = getUsedRulesFromSupportsRule(supportsRule, htmlChecker);
 
-                    if (finalsupportsRule != null) {
-                        finalCSS.addRule(finalsupportsRule);
+                    if (finalSupportsRule != null) {
+                        finalCSS.addRule(finalSupportsRule);
                     }
 
                 } else {
-                    finalCSS.addRule(rules.get(i));
+                    finalCSS.addRule(rule);
                 }
-
             }
-
         }
 
-        final CSSWriterSettings aSettings;
-        aSettings = new CSSWriterSettings(ECSSVersion.LATEST, false);
+        // Configure CSS writer settings.
+        final CSSWriterSettings writerSettings = new CSSWriterSettings(ECSSVersion.LATEST, false);
 
         if (options.isMinifyCSSOutput()) {
-            aSettings.setOptimizedOutput(true);
-            aSettings.setRemoveUnnecessaryCode(true);
+            writerSettings.setOptimizedOutput(true);
+            writerSettings.setRemoveUnnecessaryCode(true);
         }
 
-        final CSSWriter aWriter = new CSSWriter(aSettings);
-        //aWriter.setContentCharset(StandardCharsets.UTF_8.name());
-        aWriter.setHeaderText("");
+        // Write the final CSS as a string.
+        final CSSWriter cssWriter = new CSSWriter(writerSettings);
+        cssWriter.setHeaderText(""); // Set header text to an empty string.
 
-        return aWriter.getCSSAsString(finalCSS);
+        return cssWriter.getCSSAsString(finalCSS);
     }
-
 }
+

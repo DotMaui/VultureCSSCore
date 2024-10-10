@@ -46,7 +46,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONObject;
 
 public class MainClass {
@@ -217,9 +216,9 @@ public class MainClass {
 
             try {
                 java.net.URL u = new java.net.URL(css_to_optimize);
-                css_to_optimize_content = Interface.DownloadFromUrl(u);
+                css_to_optimize_content = Interface.downloadFromUrl(u);
             } catch (MalformedURLException ex) {
-                css_to_optimize_content = Interface.readLineByLineJava8(css_to_optimize);
+                css_to_optimize_content = Interface.readFileContent(css_to_optimize);
             }
 
             if (cmd.hasOption("html")) {
@@ -229,9 +228,9 @@ public class MainClass {
 
                 try {
                     java.net.URL u = new java.net.URL(html_to_compare);
-                    html_to_compare_content = Interface.DownloadFromUrl(u);
+                    html_to_compare_content = Interface.downloadFromUrl(u);
                 } catch (MalformedURLException ex) {
-                    html_to_compare_content = Interface.readLineByLineJava8(html_to_compare);
+                    html_to_compare_content = Interface.readFileContent(html_to_compare);
                 }
 
                 VultureCSSCore v = new VultureCSSCore(css_to_optimize_content, html_to_compare_content);

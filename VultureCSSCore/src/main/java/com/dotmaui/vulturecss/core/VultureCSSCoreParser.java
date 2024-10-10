@@ -23,185 +23,219 @@
  */
 package com.dotmaui.vulturecss.core;
 
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.CSSUtility.checkIfRuleIsUsed;
 import com.dotmaui.vulturecss.models.Carcass;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CSSMediaRule;
 import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CSSSupportsRule;
-import com.helger.css.decl.CSSWritableList;
 import com.helger.css.decl.CascadingStyleSheet;
 import com.helger.css.decl.ICSSTopLevelRule;
 import com.helger.css.reader.CSSReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VultureCSSCoreParser {
-    //private static final Logger LOGGER = LoggerFactory.getLogger (VultureCSSCoreParser.class);
 
     /**
-     *
-     * @param css
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws IOException
+     * Utility class for CSS rule extraction and validation from a string
+     * representation.
      */
-    public static ICommonsList<ICSSTopLevelRule> GetRulesFromString(String css) throws UnsupportedEncodingException, IOException {
+    public class CSSUtility {
 
-        CascadingStyleSheet readFromString = CSSReader.readFromString(css, ECSSVersion.LATEST);
-        ICommonsList<ICSSTopLevelRule> allRules = null;
-
-        if (readFromString != null) {
-            allRules = readFromString.getAllRules();
-        } 
-        
-        return allRules;
-
-    }
-
-    public static CSSStyleRule CheckIfRuleIsUsed(CSSStyleRule rule, VultureCSSCoreHTMLChecker htmlChecker) {
-
-        CSSStyleRule finalRule = null;
-
-        ICommonsList<CSSSelector> allSelectors = rule.getAllSelectors();
-
-        if (allSelectors.size() > 1) {
-
-            finalRule = htmlChecker.multiSelectorControl((CSSStyleRule) rule);
-
-        } else if (htmlChecker.isSelectorUsed(allSelectors.get(0).getAsCSSString())) {
-
-            finalRule = rule;
-
+        /**
+         * Parses the given CSS string and returns a list of top-level rules.
+         *
+         * @param css The CSS string to be parsed.
+         * @return A list of top-level CSS rules, or an empty list if the
+         * parsing fails.
+         * @throws UnsupportedEncodingException if the encoding is unsupported.
+         * @throws IOException if an I/O error occurs.
+         */
+        public static ICommonsList<ICSSTopLevelRule> getRulesFromString(String css) throws UnsupportedEncodingException, IOException {
+            // Read the CSS string and return all top-level rules
+            return Optional.ofNullable(CSSReader.readFromString(css, ECSSVersion.LATEST))
+                    .map(CascadingStyleSheet::getAllRules)
+                    .orElse(new CommonsArrayList<>()); // Return empty list if null
         }
 
-        if (finalRule != null && finalRule.hasDeclarations() && finalRule.hasSelectors()) {
-            return finalRule;
-        } else {
-            return null;
-        }
+        /**
+         * Checks if the given CSSStyleRule is used in the HTML based on the
+         * selectors.
+         *
+         * @param rule The CSS rule to check.
+         * @param htmlChecker The checker instance responsible for validating
+         * the rule against HTML.
+         * @return The rule if used, otherwise null.
+         */
+        public static CSSStyleRule checkIfRuleIsUsed(CSSStyleRule rule, VultureCSSCoreHTMLChecker htmlChecker) {
+            // Get all selectors from the rule
+            ICommonsList<CSSSelector> allSelectors = rule.getAllSelectors();
 
+            // Handle multi-selector rules
+            if (allSelectors.size() > 1) {
+                return htmlChecker.multiSelectorControl(rule);
+            }
+
+            // Handle single-selector rules
+            if (htmlChecker.isSelectorUsed(allSelectors.get(0).getAsCSSString())) {
+                return rule;
+            }
+
+            // Return the rule if it has both selectors and declarations, otherwise null
+            return (rule.hasDeclarations() && rule.hasSelectors()) ? rule : null;
+        }
     }
 
     /**
+     * Extracts and returns a CSSMediaRule containing only the style rules that
+     * are used in the provided HTML context.
      *
-     * @param mediaRule
-     * @param htmlChecker
-     * @return
+     * @param mediaRule The media rule to check for used CSS rules.
+     * @param htmlChecker An instance of VultureCSSCoreHTMLChecker used to
+     * verify if the CSS selectors are used.
+     * @return A new CSSMediaRule containing only the used rules, or null if no
+     * rules are used.
      */
-    public static CSSMediaRule GetUsedRulesFromMediaRule(CSSMediaRule mediaRule, VultureCSSCoreHTMLChecker htmlChecker) {
+    public static CSSMediaRule getUsedRulesFromMediaRule(CSSMediaRule mediaRule, VultureCSSCoreHTMLChecker htmlChecker) {
 
-        ICommonsList<CSSStyleRule> usedRules = new CSSWritableList<>();
+        // List to store the used CSSStyleRules
+        ICommonsList<CSSStyleRule> usedRules = new CommonsArrayList<>();
 
+        // Iterate through all style rules in the media rule
         for (CSSStyleRule rule : mediaRule.getAllStyleRules()) {
 
-            CSSStyleRule ruleIfUsedNullIfNot = CheckIfRuleIsUsed(rule, htmlChecker);
+            // Check if the rule is used; if used, it will return the rule, otherwise null
+            CSSStyleRule ruleIfUsed = checkIfRuleIsUsed(rule, htmlChecker);
 
-            if (ruleIfUsedNullIfNot != null) {
-                usedRules.add(ruleIfUsedNullIfNot);
+            // If the rule is used, add it to the list of used rules
+            if (ruleIfUsed != null) {
+                usedRules.add(ruleIfUsed);
             }
-
         }
 
-        if (usedRules.size() > 0) {
+        // If there are any used rules, return a new media rule containing them
+        if (!usedRules.isEmpty()) {
 
+            // Create a new CSSMediaRule for storing the used rules
             CSSMediaRule finalMediaRule = new CSSMediaRule();
 
-            mediaRule.getAllMediaQueries().forEach((mediaQuery) -> {
-                finalMediaRule.addMediaQuery(mediaQuery);
-            });
+            // Add all media queries from the original rule to the new one
+            mediaRule.getAllMediaQueries().forEach(finalMediaRule::addMediaQuery);
 
-            usedRules.forEach((rule) -> {
-                finalMediaRule.addRule(rule);
-            });
+            // Add the used style rules to the new media rule
+            usedRules.forEach(finalMediaRule::addRule);
 
             return finalMediaRule;
-            
-        } else {
-            return null;
 
+        } else {
+            // Return null if no rules are used
+            return null;
         }
     }
 
     /**
+     * Filters and returns a CSSSupportsRule containing only the CSS rules that
+     * are used in the provided HTML context.
      *
-     * @param supportsRule
-     * @param htmlChecker
-     * @return
+     * @param supportsRule The supports rule to be filtered for used CSS rules.
+     * @param htmlChecker An instance of VultureCSSCoreHTMLChecker used to check
+     * if the selectors are used in the HTML.
+     * @return A new CSSSupportsRule containing only the used rules, or null if
+     * no rules are used.
      */
-    public static CSSSupportsRule GetUsedRulesFromSupportsRule(CSSSupportsRule supportsRule, VultureCSSCoreHTMLChecker htmlChecker) {
+    public static CSSSupportsRule getUsedRulesFromSupportsRule(CSSSupportsRule supportsRule, VultureCSSCoreHTMLChecker htmlChecker) {
 
-        ICommonsList<CSSStyleRule> usedRules = new CSSWritableList<>();
+        // List to store the used CSSStyleRules
+        ICommonsList<CSSStyleRule> usedRules = new CommonsArrayList<>();
 
+        // Iterate through all style rules in the supports rule
         for (CSSStyleRule rule : supportsRule.getAllStyleRules()) {
 
-            CSSStyleRule ruleIfUsedNullIfNot = CheckIfRuleIsUsed(rule, htmlChecker);
+            // Check if the rule is used in the HTML context
+            CSSStyleRule ruleIfUsed = checkIfRuleIsUsed(rule, htmlChecker);
 
-            if (ruleIfUsedNullIfNot != null) {
-                usedRules.add(ruleIfUsedNullIfNot);
+            // If the rule is used, add it to the list of used rules
+            if (ruleIfUsed != null) {
+                usedRules.add(ruleIfUsed);
             }
-
         }
 
-        if (usedRules.size() > 0) {
+        // If any rules are used, return a new CSSSupportsRule with the used rules
+        if (!usedRules.isEmpty()) {
 
+            // Create a new CSSSupportsRule for storing the used rules
             CSSSupportsRule finalSupportsRule = new CSSSupportsRule();
 
-            supportsRule.getAllSupportConditionMembers().forEach((supportsCondition) -> {
-                finalSupportsRule.addSupportConditionMember(supportsCondition);
-            });
+            // Add all support condition members from the original rule to the new one
+            supportsRule.getAllSupportConditionMembers().forEach(finalSupportsRule::addSupportConditionMember);
 
-            usedRules.forEach((rule) -> {
-                finalSupportsRule.addRule(rule);
-            });
+            // Add the used style rules to the new supports rule
+            usedRules.forEach(finalSupportsRule::addRule);
 
-            //used_css.append(finalMediaRule.getAsCSSString());
             return finalSupportsRule;
-        } else {
-            return null;
 
+        } else {
+            // Return null if no rules are used
+            return null;
         }
     }
 
-    public static List<Carcass> ExtractAllStyleSheetsUrls(String html, URL html_url) {
+    /**
+     * Extracts and returns a list of all CSS stylesheet URLs from the given
+     * HTML content.
+     *
+     * @param html The HTML content as a string.
+     * @param htmlUrl The base URL of the HTML document to resolve relative
+     * paths.
+     * @return A list of Carcass objects, each containing the URL of a
+     * stylesheet.
+     */
+    public static List<Carcass> extractAllStyleSheetsUrls(String html, URL htmlUrl) {
 
-        List<Carcass> Carcasses = new ArrayList<>();
+        // List to store the extracted CSS stylesheet URLs
+        List<Carcass> carcasses = new ArrayList<>();
 
+        // Parse the HTML document using Jsoup
         Document doc = Jsoup.parse(html);
-        Elements links_css = doc.select("link[rel='stylesheet']");
 
-        for (Element link_css : links_css) {
+        // Select all link elements with the rel attribute set to 'stylesheet'
+        Elements cssLinks = doc.select("link[rel='stylesheet']");
 
+        // Iterate through the selected link elements
+        for (Element cssLink : cssLinks) {
+
+            // Create a new Carcass object to store the stylesheet URL
             Carcass c = new Carcass();
-            c.setPath(link_css.attr("href"));
+            c.setPath(cssLink.attr("href"));
 
-            if (!c.getPath().startsWith("http") && html_url != null) {
-
-                URL mergedURL;
-
+            // If the URL is relative, resolve it against the base URL
+            if (!c.getPath().startsWith("http") && htmlUrl != null) {
                 try {
-                    mergedURL = new URL(html_url, c.getPath());
+                    URL mergedURL = new URL(htmlUrl, c.getPath());
                     c.setPath(mergedURL.toString());
                 } catch (MalformedURLException ex) {
+                    // Handle the exception (e.g., log or rethrow)
                 }
-
             }
 
-            Carcasses.add(c);
-
+            // Add the Carcass object to the list
+            carcasses.add(c);
         }
 
-        return Carcasses;
-
+        return carcasses;
     }
 
 }

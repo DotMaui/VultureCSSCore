@@ -24,7 +24,6 @@
 package com.dotmaui.vulturecss.core;
 
 import com.dotmaui.vulturecss.models.CarcassDeclaration;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSMediaRule;
 import com.helger.css.decl.CSSSelector;
@@ -35,105 +34,101 @@ import java.util.List;
 
 public class VultureCSSCoreOptimize {
 
-    public static CSSMediaRule OptimizeMediaRule(CSSMediaRule cssMediaRule) {
+    /**
+     * Optimizes a given CSSMediaRule by merging and deduplicating its contained CSSStyleRules.
+     * 
+     * @param cssMediaRule The CSSMediaRule to optimize.
+     * @return A new optimized CSSMediaRule.
+     */
+    public static CSSMediaRule optimizeMediaRule(CSSMediaRule cssMediaRule) {
 
-        CSSMediaRule cssMediaRuleNew = new CSSMediaRule();
-
-        ICommonsList<ICSSTopLevelRule> allStyleRules = cssMediaRule.getAllRules();
-
-        List<CSSStyleRule> allStyleRulesAsList = new ArrayList<>();
-
-        for (ICSSTopLevelRule styleRule : allStyleRules) {
-
-            CSSStyleRule cssStyleRule = (CSSStyleRule) styleRule;
-
-            allStyleRulesAsList.add(cssStyleRule);
-        }
-
-        List<CSSStyleRule> allStyleRulesOptimizedAsList = OptimizeCSSStyleRules(allStyleRulesAsList);
-
-        cssMediaRuleNew.addMediaQuery(cssMediaRule.getMediaQueryAtIndex(0));
-
-        for (CSSStyleRule optimizedStyleRule : allStyleRulesOptimizedAsList) {
-            cssMediaRuleNew.addRule(optimizedStyleRule);
-        }
-
-        return cssMediaRuleNew;
-
-    }
-
-    public static List<CSSStyleRule> OptimizeCSSStyleRules(List<CSSStyleRule> rules) {
-
+        CSSMediaRule optimizedMediaRule = new CSSMediaRule();
         List<CSSStyleRule> allStyleRules = new ArrayList<>();
 
-        for (ICSSTopLevelRule rule : rules) {
-
-            CSSStyleRule cssStyleRule = (CSSStyleRule) rule;
-
-            // Ex: [color: red, color:orange, ...]
-            List<CSSDeclaration> initialDeclarations = cssStyleRule.getAllDeclarations();
-
-            // in this list I will insert the unique rules with which I will rebuild the css later
-            List<CarcassDeclaration> carcassDeclarations = new ArrayList<>();
-
-            for (int i = initialDeclarations.size() - 1; i >= 0; i--) {
-
-                // Ex: color
-                String selector = initialDeclarations.get(i).getAsCSSString().split(":")[0].trim();
-
-                // Ex: red
-                String definition = initialDeclarations.get(i).getAsCSSString().split(":")[1].trim();
-
-                boolean finded = false;
-                boolean isImportant = false;
-
-                if (definition.endsWith("!important") || definition.endsWith("!important;")) {
-                    isImportant = true;
-                }
-
-                for (CarcassDeclaration carcassDeclaration : carcassDeclarations) {
-
-                    // Ex: color
-                    String carcassSelector = carcassDeclaration.getDeclaration().getAsCSSString().split(":")[0].trim();
-
-                    //System.out.println( selector  + " == " + carcassSelector );
-                    if (selector.equals(carcassSelector)) {
-
-                        if (isImportant) {
-                            carcassDeclaration.setDeclaration(initialDeclarations.get(i));
-                        }
-
-                        finded = true;
-
-                    }
-
-                }
-
-                if (!finded) {
-
-                    // Ex: (false, color, color:red).
-                    carcassDeclarations.add(new CarcassDeclaration(isImportant, selector, initialDeclarations.get(i)));
-
-                }
-
-            }
-
-            CSSStyleRule newCssStyleRule = new CSSStyleRule();
-
-            for (CSSSelector selector : cssStyleRule.getAllSelectors()) {
-                newCssStyleRule.addSelector(selector);
-            }
-
-            for (CarcassDeclaration carcassDeclaration : carcassDeclarations) {
-                newCssStyleRule.addDeclaration(carcassDeclaration.getDeclaration());
-            }
-
-            allStyleRules.add(newCssStyleRule);
-
+        // Collect all style rules from the media rule
+        for (ICSSTopLevelRule rule : cssMediaRule.getAllRules()) {
+            allStyleRules.add((CSSStyleRule) rule);
         }
 
-        return allStyleRules;
+        // Optimize the style rules by removing duplicates
+        List<CSSStyleRule> optimizedStyleRules = optimizeCSSStyleRules(allStyleRules);
 
+        // Add the media query to the optimized media rule
+        optimizedMediaRule.addMediaQuery(cssMediaRule.getMediaQueryAtIndex(0));
+
+        // Add the optimized style rules to the new media rule
+        for (CSSStyleRule optimizedRule : optimizedStyleRules) {
+            optimizedMediaRule.addRule(optimizedRule);
+        }
+
+        return optimizedMediaRule;
     }
 
+    /**
+     * Optimizes a list of CSSStyleRules by removing duplicate declarations and handling
+     * !important rules correctly.
+     * 
+     * @param rules The list of CSSStyleRules to optimize.
+     * @return A list of optimized CSSStyleRules.
+     */
+    public static List<CSSStyleRule> optimizeCSSStyleRules(List<CSSStyleRule> rules) {
+
+        List<CSSStyleRule> optimizedStyleRules = new ArrayList<>();
+
+        // Iterate over each rule to optimize its declarations
+        for (CSSStyleRule cssStyleRule : rules) {
+
+            List<CSSDeclaration> originalDeclarations = cssStyleRule.getAllDeclarations();
+            List<CarcassDeclaration> optimizedDeclarations = new ArrayList<>();
+
+            // Process declarations in reverse order to ensure latest declarations take precedence
+            for (int i = originalDeclarations.size() - 1; i >= 0; i--) {
+
+                CSSDeclaration declaration = originalDeclarations.get(i);
+                String property = declaration.getAsCSSString().split(":")[0].trim();
+                String value = declaration.getAsCSSString().split(":")[1].trim();
+                boolean isImportant = value.endsWith("!important") || value.endsWith("!important;");
+
+                boolean found = false;
+
+                // Check if the property has already been processed
+                for (CarcassDeclaration optimizedDeclaration : optimizedDeclarations) {
+                    String existingProperty = optimizedDeclaration.getDeclaration().getAsCSSString().split(":")[0].trim();
+
+                    // If property matches and the new declaration is !important, replace the existing one
+                    if (property.equals(existingProperty)) {
+                        if (isImportant) {
+                            optimizedDeclaration.setDeclaration(declaration);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+
+                // If property was not found, add it to the list of optimized declarations
+                if (!found) {
+                    optimizedDeclarations.add(new CarcassDeclaration(isImportant, property, declaration));
+                }
+            }
+
+            // Create a new CSSStyleRule with optimized declarations
+            CSSStyleRule optimizedStyleRule = new CSSStyleRule();
+
+            // Copy the selectors from the original rule
+            for (CSSSelector selector : cssStyleRule.getAllSelectors()) {
+                optimizedStyleRule.addSelector(selector);
+            }
+
+            // Add the optimized declarations to the new rule
+            for (CarcassDeclaration optimizedDeclaration : optimizedDeclarations) {
+                optimizedStyleRule.addDeclaration(optimizedDeclaration.getDeclaration());
+            }
+
+            // Add the optimized rule to the final list
+            optimizedStyleRules.add(optimizedStyleRule);
+        }
+
+        return optimizedStyleRules;
+    }
 }
+

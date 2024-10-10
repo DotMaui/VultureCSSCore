@@ -24,10 +24,8 @@
 package com.dotmaui.vulturecss.core;
 
 import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
-import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.ExtractAllStyleSheetsUrls;
-import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.GetRulesFromString;
-import static com.dotmaui.vulturecss.utils.Interface.DownloadFromUrl;
-import static com.dotmaui.vulturecss.utils.Interface.DownloadRenderedPage;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.CSSUtility.getRulesFromString;
+import static com.dotmaui.vulturecss.core.VultureCSSCoreParser.extractAllStyleSheetsUrls;
 import com.dotmaui.vulturecss.models.Carcass;
 import com.dotmaui.vulturecss.models.VultureCSSOptions;
 import com.dotmaui.vulturecss.utils.Functions;
@@ -42,12 +40,13 @@ import com.helger.css.decl.CascadingStyleSheet;
 import com.helger.css.decl.ICSSTopLevelRule;
 import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
+import static com.dotmaui.vulturecss.utils.Interface.downloadFromUrl;
+import static com.dotmaui.vulturecss.utils.Interface.downloadRenderedPage;
 
 public class VultureCSSCore {
 
@@ -112,7 +111,7 @@ public class VultureCSSCore {
 
         if (this.cssUrl != null) {
 
-            this.css = DownloadFromUrl(this.cssUrl);
+            this.css = downloadFromUrl(this.cssUrl);
 
             if (this.css == null) {
                 throw new Exception("The download of the CSS file has failed");
@@ -123,9 +122,9 @@ public class VultureCSSCore {
         if (this.htmlUrl != null) {
 
             if (this.options.isUseStaticHTMLFromWebPage()) {
-                this.html = DownloadFromUrl(this.htmlUrl);
+                this.html = downloadFromUrl(this.htmlUrl);
             } else {
-                this.html = DownloadRenderedPage(this.htmlUrl);
+                this.html = downloadRenderedPage(this.htmlUrl);
             }
 
             if (this.html == null) {
@@ -142,13 +141,13 @@ public class VultureCSSCore {
 
         if (!"".equals(this.html) && "".equals(this.css)) {
 
-            carcasses = ExtractAllStyleSheetsUrls(html, this.htmlUrl);
+            carcasses = extractAllStyleSheetsUrls(html, this.htmlUrl);
 
             for (Carcass c : carcasses) {
 
                 URL css_url = new URL(c.getPath());
 
-                String css_string_from_url = Interface.DownloadFromUrl(css_url);
+                String css_string_from_url = Interface.downloadFromUrl(css_url);
                 String used_css = "";
 
                 try {
@@ -237,7 +236,7 @@ public class VultureCSSCore {
 
         CascadingStyleSheet newStyleSheetWithAllDeclarationsFinal = new CascadingStyleSheet();
 
-        ICommonsList<ICSSTopLevelRule> rules = GetRulesFromString(css);
+        ICommonsList<ICSSTopLevelRule> rules = getRulesFromString(css);
 
         CascadingStyleSheet newStyleSheetWithAllDeclarations = VultureCSSCoreMergify.MergeRules(rules);
 
@@ -247,18 +246,17 @@ public class VultureCSSCore {
 
         for (ICSSTopLevelRule ruleCompare : mergedRules) {
 
-            if (ruleCompare instanceof CSSMediaRule) {
+            if (ruleCompare instanceof CSSMediaRule cSSMediaRule) {
 
-                CSSMediaRule optimizedMediaRule = VultureCSSCoreOptimize.OptimizeMediaRule((CSSMediaRule) ruleCompare);
+                CSSMediaRule optimizedMediaRule = VultureCSSCoreOptimize.optimizeMediaRule(cSSMediaRule);
                 newStyleSheetWithAllDeclarationsFinal.addRule(optimizedMediaRule);
 
-            } else if (ruleCompare instanceof CSSStyleRule) {
+            } else if (ruleCompare instanceof CSSStyleRule cssStyleRuleToOptimize) {
 
-                CSSStyleRule cssStyleRuleToOptimize = (CSSStyleRule) ruleCompare;
                 List<CSSStyleRule> cssStyleRuleList = new ArrayList<>();
                 cssStyleRuleList.add(cssStyleRuleToOptimize);
 
-                List<CSSStyleRule> optimizedCSSStyleRuleList = VultureCSSCoreOptimize.OptimizeCSSStyleRules(cssStyleRuleList);
+                List<CSSStyleRule> optimizedCSSStyleRuleList = VultureCSSCoreOptimize.optimizeCSSStyleRules(cssStyleRuleList);
 
                 for (ICSSTopLevelRule optimizedRuleCompare : optimizedCSSStyleRuleList) {
 
@@ -266,9 +264,9 @@ public class VultureCSSCore {
 
                 }
 
-            } else if (ruleCompare instanceof CSSImportRule) {
+            } else if (ruleCompare instanceof CSSImportRule cSSImportRule) {
 
-                newStyleSheetWithAllDeclarationsFinal.addImportRule(importRulesIndex, (CSSImportRule) ruleCompare);
+                newStyleSheetWithAllDeclarationsFinal.addImportRule(importRulesIndex, cSSImportRule);
 
                 importRulesIndex++;
 
@@ -295,26 +293,34 @@ public class VultureCSSCore {
     }
 
     /**
+     * Merges the CSS content from a list of URLs into a single string and
+     * optimizes it. This method downloads CSS files from the provided URLs,
+     * merges them into one, and then performs optimization.
      *
-     * @param urls
-     * @return
-     * @throws java.net.MalformedURLException
-     * @throws Exception
+     * @param urls A list of URLs pointing to CSS files to be merged.
+     * @return A string containing the merged and optimized CSS content.
+     * @throws MalformedURLException If any URL is malformed.
+     * @throws Exception If an error occurs during download or optimization.
      */
     public static String mergeAndOptimizeCSSFromUrls(List<String> urls) throws MalformedURLException, Exception {
 
-        String mergedCSS = "";
+        StringBuilder mergedCSS = new StringBuilder();
 
-        // I merge all the files into one string
-        for (String u : urls) {
+        // Download each CSS file and append it to the merged CSS content.
+        for (String urlString : urls) {
 
-            String tempCSS = DownloadFromUrl(new URL(u));
-            mergedCSS = mergedCSS.concat(tempCSS);
+            // Download the CSS content from the current URL.
+            String tempCSS = downloadFromUrl(new URL(urlString));
+
+            // Append the downloaded CSS content to the mergedCSS StringBuilder.
+            if (tempCSS != null) {
+                mergedCSS.append(tempCSS);
+            }
 
         }
 
-        return mergeAndOptimize(mergedCSS);
-
+        // Call the mergeAndOptimize function with the concatenated CSS content.
+        return mergeAndOptimize(mergedCSS.toString());
     }
 
     /**

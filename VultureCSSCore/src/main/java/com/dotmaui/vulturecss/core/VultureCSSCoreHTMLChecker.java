@@ -30,7 +30,6 @@ import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CSSWritableList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,7 +46,6 @@ public class VultureCSSCoreHTMLChecker {
     private final List<String> pseudoClassesWithbrackets = new ArrayList<>();
     private final Document htmlDocument;
     private final VultureCSSOptions options;
-      
 
     /**
      * @param html
@@ -57,7 +55,7 @@ public class VultureCSSCoreHTMLChecker {
 
         this.htmlDocument = Jsoup.parse(html);
         this.options = options;
-        
+
         /**
          * Jsoup raises an exception when pseudo-classes and pseudo-elements are
          * present in the selector. To avoid this I exclude pseudo-classes and
@@ -233,21 +231,19 @@ public class VultureCSSCoreHTMLChecker {
 
         // Whitelist.
         if (this.options.getWhiteListRules() != null) {
-            
-            for (Iterator it = this.options.getWhiteListRules().iterator(); it.hasNext();) {
-                
-                WhiteListRule whiteListRule = (WhiteListRule) it.next();
-                
-                if (whiteListRule.getType() == WhiteListRule.CONTAINING &&  selector.toLowerCase().contains(whiteListRule.getSelector().toLowerCase())) {
+
+            for (WhiteListRule whiteListRule : this.options.getWhiteListRules()) {
+
+                if (whiteListRule.getType() == WhiteListRule.CONTAINING && selector.toLowerCase().contains(whiteListRule.getSelector().toLowerCase())) {
+                    return true;
+                } else if (whiteListRule.getType() == WhiteListRule.EQUALS && whiteListRule.getSelector().toLowerCase().equals(selector.toLowerCase())) {
                     return true;
                 }
-                else if (whiteListRule.getType() == WhiteListRule.EQUALS && whiteListRule.getSelector().toLowerCase().equals(selector.toLowerCase())) {
-                    return true;
-                }
+
             }
-            
+
         }
-        
+
         Elements elm;
 
         // If the search raises an exception, the rule is considered valid 
@@ -266,15 +262,15 @@ public class VultureCSSCoreHTMLChecker {
     }
 
     /**
-     * 
+     *
      * @param rule
-     * @return 
+     * @return
      */
     public CSSStyleRule multiSelectorControl(CSSStyleRule rule) {
 
         ICommonsList<CSSSelector> allSelectors = rule.getAllSelectors();
         ICommonsList<CSSSelector> finalSelectors = new CSSWritableList<>();
-        
+
         CSSStyleRule finalRule = new CSSStyleRule();
 
         for (CSSSelector selector : allSelectors) {
@@ -291,18 +287,18 @@ public class VultureCSSCoreHTMLChecker {
 
         }
 
-        if (finalSelectors.size() > 0) {            
+        if (finalSelectors.size() > 0) {
 
             finalSelectors.forEach((selector) -> {
                 finalRule.addSelector(selector);
             });
-            
-            rule.getAllDeclarations().forEach((declaration) -> {            
-                finalRule.addDeclaration(declaration);            
+
+            rule.getAllDeclarations().forEach((declaration) -> {
+                finalRule.addDeclaration(declaration);
             });
-            
+
         }
-        
+
         return finalRule;
 
     }
@@ -311,10 +307,9 @@ public class VultureCSSCoreHTMLChecker {
      *
      * @internal Examples of output of this function
      *
-     * :root -> :root 
-     * a:after -> a 
-     * a[href^="javascript:"]:after -> a[href^="javascript:"]
-     *      
+     * :root -> :root a:after -> a a[href^="javascript:"]:after ->
+     * a[href^="javascript:"]
+     *
      * @param selector
      * @return String
      */
