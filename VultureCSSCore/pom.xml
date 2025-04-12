@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dotmaui.vulturecss</groupId>
     <artifactId>VultureCSSCore</artifactId>
-    <version>0.3.0-BETA</version>
+    <version>0.3.1-BETA</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-css</artifactId>
-            <version>7.0.2</version>
+            <version>7.0.4</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>org.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>4.4.0</version>
+            <version>4.11.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.yahoo.platform.yui/yuicompressor -->
         <dependency>
@@ -78,19 +78,19 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.18.1</version>
+            <version>1.19.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.sf.cssbox/jstyleparser -->
         <dependency>
             <groupId>net.sf.cssbox</groupId>
             <artifactId>jstyleparser</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20240303</version>
+            <version>20250107</version>
         </dependency>
 
     </dependencies>
@@ -135,6 +135,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <version>3.4.1</version>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>

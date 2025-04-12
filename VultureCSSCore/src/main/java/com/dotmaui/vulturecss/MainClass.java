@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2024 .Maui | dotmaui.com
+ * Copyright 2025 .Maui | dotmaui.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.json.JSONObject;
@@ -60,7 +59,9 @@ public class MainClass {
 
         /**
          * Disable log4j logging from Java code.
-         * @link https://stackoverflow.com/questions/8709357/how-to-disable-log4j-logging-from-java-code/8711378#8711378
+         *
+         * @link
+         * https://stackoverflow.com/questions/8709357/how-to-disable-log4j-logging-from-java-code/8711378#8711378
          */
         Logger.getLogger("ac.biu.nlp.nlp.engineml").setLevel(Level.OFF);
         Logger.getLogger("org.BIU.utils.logging.ExperimentLogger").setLevel(Level.OFF);
@@ -70,39 +71,42 @@ public class MainClass {
         // See an exemple of a log4j.properties file here: https://dotmaui.com/pastebin/GylLax2D
         //String log4jConfPath = "/home/maui/log4j.properties";
         //PropertyConfigurator.configure(log4jConfPath);
-        
         Options options = new Options();
         Option help = new Option("help", "Print this message");
 
-        Option css = OptionBuilder.withArgName("file or url")
+        Option css = Option.builder("css")
                 .hasArg()
-                .withDescription("The CSS to be optimized. It can be a path or a URL.")
-                .create("css");
+                .desc("The CSS to be optimized. It can be a path or a URL.")
+                .build();
 
-        Option html = OptionBuilder.withArgName("file or url")
+        Option html = Option.builder("html")
+                .argName("file or url")
                 .hasArg()
-                .withDescription("The HTML to be analyzed. It can be a path or a URL.")
-                .create("html");
+                .desc("The HTML to be analyzed. It can be a path or a URL.")
+                .build();
 
-        Option output = OptionBuilder.withArgName("file")
+        Option output = Option.builder("out")
+                .argName("file")
                 .hasArg()
-                .withDescription("Output file. If omitted the result will be displayed on the screen.")
-                .create("out");
+                .desc("Output file. If omitted the result will be displayed on the screen.")
+                .build();
 
-        Option destination_folder = OptionBuilder.withArgName("path")
+        Option destination_folder = Option.builder("df")
+                .argName("path")
                 .hasArg()
-                .withDescription("Destination folder. The folder where the files will be saved if only an HTML URL is specified.")
-                .create("df");
+                .desc("Destination folder. The folder where the files will be saved if only an HTML URL is specified.")
+                .build();
 
-        Option dotmaui_apikey = OptionBuilder.withArgName(".Maui apikey")
+        Option dotmaui_apikey = Option.builder("apikey")
+                .argName(".Maui apikey")
                 .hasArg()
-                .withDescription("API key to use the services of dotmaui.com. Required to save CSS files to the CDN.")
-                .create("apikey");
+                .desc("API key to use the services of dotmaui.com. Required to save CSS files to the CDN.")
+                .build();
 
         Option save_to_cdn = new Option("cdn", "If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.");
-        
+
         Option merge_all = new Option("merge", "If set, all used CSS will be merged into a single file or string.");
-        
+
         options.addOption(help);
         options.addOption(css);
         options.addOption(html);
@@ -140,7 +144,7 @@ public class MainClass {
             VultureCSSCore v = new VultureCSSCore();
 
             try {
-                
+
                 java.net.URL u = new java.net.URL(html_to_compare);
                 v.setHtmlUrl(u);
 
@@ -149,23 +153,23 @@ public class MainClass {
             }
 
             List<Carcass> carcasses = v.Process();
-            
+
             if (cmd.hasOption("merge")) {
-                
+
                 String merged_css = "";
-                
+
                 for (Carcass c : carcasses) {
                     merged_css = Functions.concat(merged_css, c.getUsedCSS());
                 }
-                
-                 carcasses = new ArrayList<>();
-                 
-                 Carcass c = new Carcass();
-                 c.setUsedCSS(merged_css);
-                 c.setPath("/merged.css");
-                 
-                 carcasses.add(c);
-                 
+
+                carcasses = new ArrayList<>();
+
+                Carcass c = new Carcass();
+                c.setUsedCSS(merged_css);
+                c.setPath("/merged.css");
+
+                carcasses.add(c);
+
             }
 
             for (Carcass c : carcasses) {
@@ -249,7 +253,7 @@ public class MainClass {
                 }
 
             } else if (cmd.hasOption("cdn")) {
-                
+
                 DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(cmd.getOptionValue("apikey"));
                 client.setMode(1);
                 client.setName("result.min.css");
