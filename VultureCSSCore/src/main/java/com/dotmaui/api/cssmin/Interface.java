@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2025 .Maui | dotmaui.com.
+ * Copyright 2026 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.dotmaui.api.cssmin;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,12 +49,12 @@ public class Interface {
 
         con.setDoOutput(true);
 
-        try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
+        try ( DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
             wr.writeBytes(urlParameters);
             wr.flush();
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+        try ( BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             result = reader.lines().collect(Collectors.joining("\n"));
         }
 
@@ -63,36 +62,24 @@ public class Interface {
 
     }
 
-    public static String downloadFromUrl(String url_req) {
-
-        URL url;
-        InputStream is = null;
-        BufferedReader br;
-        String line;
-        String content = "";
-
+    public static String downloadFromUrl(String urlReq) {
         try {
-            url = new URL(url_req);
-            is = url.openStream();  // throws an IOException
-            br = new BufferedReader(new InputStreamReader(is));
+            URL url = new URL(urlReq);
 
-            while ((line = br.readLine()) != null) {
-                content += line;
-            }
-        } catch (MalformedURLException mue) {
-            return null;
-        } catch (IOException ioe) {
-            return null;
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
+            try ( BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))) {
+
+                StringBuilder content = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    content.append(line);
                 }
-            } catch (IOException ioe) {
-                // nothing to see here
-            }
-        }
 
-        return content;
+                return content.toString();
+            }
+        } catch (IOException ex) {
+            return null;
+        }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2025 .Maui | dotmaui.com.
+ * Copyright 2026 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.dotmaui.vulturecss.utils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -61,7 +60,7 @@ public class Interface {
                 }
             }
         } catch (IOException ioe) {
-            System.err.println("IO error: " + ioe.getMessage()); // Log the exception
+            System.err.println("IO error: ".concat(ioe.getMessage())); // Log the exception
             return null;
         }
 

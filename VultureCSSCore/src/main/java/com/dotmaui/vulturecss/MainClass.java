@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2025 .Maui | dotmaui.com
+ * Copyright 2026 .Maui | dotmaui.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package com.dotmaui.vulturecss;
 
-import com.dotmaui.api.cssmin.DotMauiCSSMinifyClient;
 import com.dotmaui.vulturecss.core.VultureCSSCore;
 import com.dotmaui.vulturecss.models.Carcass;
 import com.dotmaui.vulturecss.utils.Functions;
@@ -45,7 +44,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.json.JSONObject;
 
 public class MainClass {
 
@@ -97,23 +95,13 @@ public class MainClass {
                 .desc("Destination folder. The folder where the files will be saved if only an HTML URL is specified.")
                 .build();
 
-        Option dotmaui_apikey = Option.builder("apikey")
-                .argName(".Maui apikey")
-                .hasArg()
-                .desc("API key to use the services of dotmaui.com. Required to save CSS files to the CDN.")
-                .build();
-
-        Option save_to_cdn = new Option("cdn", "If set, the files will be saved to the dotmaui.com CDN. a valid API key must be specified.");
-
         Option merge_all = new Option("merge", "If set, all used CSS will be merged into a single file or string.");
 
         options.addOption(help);
         options.addOption(css);
         options.addOption(html);
         options.addOption(output);
-        options.addOption(destination_folder);
-        options.addOption(dotmaui_apikey);
-        options.addOption(save_to_cdn);
+        options.addOption(destination_folder);                
         options.addOption(merge_all);
 
         CommandLineParser parser = new DefaultParser();
@@ -127,10 +115,6 @@ public class MainClass {
 
         if (!cmd.hasOption("css") && !cmd.hasOption("html")) {
             throw new Exception("Nothing to process");
-        }
-
-        if (cmd.hasOption("cdn") && !cmd.hasOption("apikey")) {
-            throw new Exception("Specify a valid API key");
         }
 
         String final_result;
@@ -179,36 +163,16 @@ public class MainClass {
                 String used_css = c.getUsedCSS();
 
                 if (!used_css.trim().equals("")) {
-
-                    if (cmd.hasOption("cdn")) {
-
-                        if (!file_name.endsWith(".css")) {
-                            file_name += ".css";
-                        }
-
-                        DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(cmd.getOptionValue("apikey"));
-                        client.setMode(1);
-                        client.setName(file_name);
-
-                        String responseCdn = client.minifyCSSFromString(used_css);
-                        JSONObject obj = new JSONObject(responseCdn);
-
-                        String fileUrl = obj.getString("url");
-
-                        System.out.println("File " + file_name + " saved to " + fileUrl);
-
-                    } else {
-
-                        if (cmd.hasOption("df")) {
-                            file_name = cmd.getOptionValue("df") + file_name;
-                        }
-
-                        try (PrintWriter out = new PrintWriter(file_name)) {
-                            out.println(used_css);
-                        }
-
+                    
+                    if (cmd.hasOption("df")) {
+                        file_name = cmd.getOptionValue("df").concat(file_name);
                     }
 
+                    try ( PrintWriter out = new PrintWriter(file_name)) {
+                        out.println(used_css);
+                    }
+
+                    //}
                 }
 
             }
@@ -248,22 +212,10 @@ public class MainClass {
 
             if (cmd.hasOption("out")) {
 
-                try (PrintWriter out = new PrintWriter(cmd.getOptionValue("out"))) {
+                try ( PrintWriter out = new PrintWriter(cmd.getOptionValue("out"))) {
                     out.println(final_result);
                 }
 
-            } else if (cmd.hasOption("cdn")) {
-
-                DotMauiCSSMinifyClient client = new DotMauiCSSMinifyClient(cmd.getOptionValue("apikey"));
-                client.setMode(1);
-                client.setName("result.min.css");
-
-                String responseCdn = client.minifyCSSFromString(final_result);
-                JSONObject obj = new JSONObject(responseCdn);
-
-                String fileUrl = obj.getString("url");
-
-                System.out.println("Saved to " + fileUrl);
             } else {
                 System.out.print(final_result);
             }

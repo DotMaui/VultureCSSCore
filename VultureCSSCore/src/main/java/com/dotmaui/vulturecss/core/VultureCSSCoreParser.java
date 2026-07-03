@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2025 .Maui | dotmaui.com.
+ * Copyright 2026 .Maui | dotmaui.com.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,11 @@ public class VultureCSSCoreParser {
             }
 
             // Return the rule if it has both selectors and declarations, otherwise null
-            return (rule.hasDeclarations() && rule.hasSelectors()) ? rule : null;
+            if (rule.hasDeclarations() && rule.hasSelectors()) {
+                return rule;
+            }
+
+            return null;
         }
     }
 
