@@ -4,7 +4,7 @@ Remove dead css from your stylesheets
 VultureCSS Core analyzes the HTML and CSS code to remove all unused CSS. This process is carried out without altering the website's appearance.
 It can be used either as a JAR file or via an API.
 
-The current version is 0.3.1 BETA.
+The current version is 0.3.2 BETA.
 
 ## Usage
 
@@ -40,29 +40,6 @@ carcasses.forEach((c) -> {
 });
 ```
 
-###### CDN Mode
-```
--html https://api.dotmaui.com -css https://api.dotmaui.com/static/djmaui/css/style.min.css -cdn -apikey DOTMAUI_APIKEY
-```
-
-```
-URL url = new URL("https://dotmaui.com");
-
-VultureCSSOptions opt = new VultureCSSOptions();
-opt.setCdnMode(true);
-opt.setDotMauiApiKey("YOUR_API_KEY");
-
-VultureCSSCore v = new VultureCSSCore();
-v.setHtmlUrl(url);
-v.setOptions(opt);
-
-List<Carcass> carcasses = v.Process();
-
-carcasses.forEach((c) -> {
-    System.out.println(c.getCdnUrl());
-});
-```
-
 ###### Merge and optimize CSS from urls
 ```
 List<String> urls = new ArrayList<>();
@@ -74,12 +51,7 @@ String result = VultureCSSCore.mergeAndOptimizeCSSFromUrls(urls);
 System.out.println(result);
 ```
 
-
-If you don't use JAVA in your project you can use VultureCSS through API. [View the complete documentation](https://api.dotmaui.com/vulturecss/).
-
 For bug reports, support or customization requests you can also contact us via Telegram at [@DotMaui](https://t.me/DotMaui).
-
-If you like this project you can support it by offering us a coffee. [You can donate through PayPal](https://dotmaui.com/donate/).
 
 ###### Third party libraries
 - [jsoup](https://github.com/jhy/jsoup)
