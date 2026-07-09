@@ -28,6 +28,9 @@ import com.dotmaui.vulturecss.models.WhiteListRule;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 
 public class VultureTest {
 
@@ -39,8 +42,8 @@ public class VultureTest {
 
         //Test1();
         //Test2();
-        //Test3();
-        Test4();
+        Test3();
+        //Test4();
     }
 
     private static void Test1() throws Exception {
@@ -87,11 +90,14 @@ public class VultureTest {
     private static void Test3() throws Exception {
 
         List<String> urls = new ArrayList<>();
-        urls.add("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-        urls.add("https://dotmaui.com/assets/css/production/dotmaui.com_app_min.css?v=2");
+        //urls.add("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+        urls.add("https://www.traghettilines.it/css/styleone.min.css");
 
         String result = VultureCSSCore.mergeAndOptimizeCSSFromUrls(urls);
+        Path output = Path.of("C:/logs/output.css");   // Windows
+// Path output = Path.of("/home/maurizio/output.css"); // Linux
 
+        Files.writeString(output, result, StandardCharsets.UTF_8);
         System.out.println(result);
 
     }

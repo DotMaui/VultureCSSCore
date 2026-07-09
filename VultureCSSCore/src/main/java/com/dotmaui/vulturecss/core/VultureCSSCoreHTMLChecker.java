@@ -29,21 +29,159 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSSelector;
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CSSWritableList;
-import java.util.ArrayList;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.jsoup.select.Selector;
 
 public class VultureCSSCoreHTMLChecker {
 
     /**
-     * Pseudo-classes and Pseudo-elements are not considered, they are removed
-     * from the selector.
+     * CSS pseudo-classes and pseudo-elements to ignore during selector
+     * matching.
+     *
+     * Jsoup does not support these selectors and throws a
+     * {@link Selector.SelectorParseException}. They are removed before matching
+     * so that only the underlying CSS selector is evaluated against the HTML.
+     *
+     * References:
+     * https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
+     * https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
      */
-    private final List<String> pseudoClasses = new ArrayList<>();
-    private final List<String> pseudoClassesWithbrackets = new ArrayList<>();
+    private static final List<String> PSEUDO_CLASSES = List.of("::visited",
+            "::valid",
+            "::target",
+            "::spelling-error",
+            "::selection",
+            "::scope",
+            "::root",
+            "::right",
+            "::required",
+            "::read-write",
+            "::read-only",
+            "::placeholder-shown",
+            "::placeholder",
+            "::out-of-range",
+            "::optional",
+            "::only-of-type",
+            "::only-child",
+            "::marker",
+            "::link",
+            "::left",
+            "::last-of-type",
+            "::last-child",
+            "::invalid",
+            "::indeterminate",
+            "::in-range",
+            "::hover",
+            "::grammar-error",
+            "::fullscreen",
+            "::focus",
+            "::first-of-type",
+            "::first-line",
+            "::first-letter",
+            "::first-child",
+            "::first",
+            "::enabled",
+            "::empty",
+            "::disabled",
+            "::default",
+            "::cue",
+            "::checked",
+            "::before",
+            "::backdrop",
+            "::any",
+            "::after",
+            "::active",
+            "::-webkit-slider-thumb",
+            "::-webkit-slider-runnable-track",
+            "::-webkit-progress-value",
+            "::-webkit-progress-bar",
+            "::-ms-value",
+            "::-ms-track",
+            "::-ms-tooltip",
+            "::-ms-ticks-before",
+            "::-ms-ticks-after",
+            "::-ms-thumb",
+            "::-ms-reveal",
+            "::-ms-fill-upper",
+            "::-ms-fill-lower",
+            "::-ms-fill",
+            "::-ms-expand",
+            "::-ms-clear",
+            "::-ms-check",
+            "::-ms-browse",
+            "::-moz-range-track",
+            "::-moz-range-thumb",
+            "::-moz-range-progress",
+            "::-moz-progress-bar",
+            ":visited",
+            ":valid",
+            ":target",
+            ":scope",
+            ":root",
+            ":right",
+            ":required",
+            ":read-write",
+            ":read-only",
+            ":placeholder-shown",
+            ":placeholder",
+            ":out-of-range",
+            ":optional",
+            ":only-of-type",
+            ":only-child",
+            ":link",
+            ":left",
+            ":last-of-type",
+            ":last-child",
+            ":invalid",
+            ":indeterminate",
+            ":in-range",
+            ":hover",
+            ":fullscreen",
+            ":focus-within",
+            ":focus-visible",
+            ":focus",
+            ":first-of-type",
+            ":first-line",
+            ":first-letter",
+            ":first-child",
+            ":first",
+            ":enabled",
+            ":empty",
+            ":disabled",
+            ":defined",
+            ":default",
+            ":checked",
+            ":blank",
+            ":before",
+            ":any-link",
+            ":any",
+            ":after",
+            ":active",
+            ":-ms-input-placeholder");
+
+    private static final List<String> PSEUDO_CLASSES_WITH_BRACKETS = List.of(":where()",
+            ":nth-col()",
+            ":nth-last-col()",
+            ":dir()",
+            ":lang()",
+            ":nth-of-type()",
+            ":nth-last-of-type()",
+            ":nth-last-child()",
+            ":nth-child()",
+            ":not()",
+            "::where()",
+            "::nth-col()",
+            ":nth-last-col()",
+            "::dir()",
+            "::lang()",
+            "::nth-of-type()",
+            "::nth-last-of-type()",
+            "::nth-last-child()",
+            "::nth-child()",
+            "::not()");
+
     private final Document htmlDocument;
     private final VultureCSSOptions options;
 
@@ -56,157 +194,12 @@ public class VultureCSSCoreHTMLChecker {
         this.htmlDocument = Jsoup.parse(html);
         this.options = options;
 
-        /**
-         * Jsoup raises an exception when pseudo-classes and pseudo-elements are
-         * present in the selector. To avoid this I exclude pseudo-classes and
-         * pseudo-elements in the selection through Jsoup, what is important to
-         * verify is the selector.
-         *
-         * @link https://developer.mozilla.org/fr/docs/Web/CSS/Pseudo-classes
-         * @link https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
-         */
-        pseudoClasses.add("::visited");
-        pseudoClasses.add("::valid");
-        pseudoClasses.add("::target");
-        pseudoClasses.add("::spelling-error");
-        pseudoClasses.add("::selection");
-        pseudoClasses.add("::scope");
-        pseudoClasses.add("::root");
-        pseudoClasses.add("::right");
-        pseudoClasses.add("::required");
-        pseudoClasses.add("::read-write");
-        pseudoClasses.add("::read-only");
-        pseudoClasses.add("::placeholder-shown");
-        pseudoClasses.add("::placeholder");
-        pseudoClasses.add("::out-of-range");
-        pseudoClasses.add("::optional");
-        pseudoClasses.add("::only-of-type");
-        pseudoClasses.add("::only-child");
-        pseudoClasses.add("::marker");
-        pseudoClasses.add("::link");
-        pseudoClasses.add("::left");
-        pseudoClasses.add("::last-of-type");
-        pseudoClasses.add("::last-child");
-        pseudoClasses.add("::invalid");
-        pseudoClasses.add("::indeterminate");
-        pseudoClasses.add("::in-range");
-        pseudoClasses.add("::hover");
-        pseudoClasses.add("::grammar-error");
-        pseudoClasses.add("::fullscreen");
-        pseudoClasses.add("::focus");
-        pseudoClasses.add("::first-of-type");
-        pseudoClasses.add("::first-line");
-        pseudoClasses.add("::first-letter");
-        pseudoClasses.add("::first-child");
-        pseudoClasses.add("::first");
-        pseudoClasses.add("::enabled");
-        pseudoClasses.add("::empty");
-        pseudoClasses.add("::disabled");
-        pseudoClasses.add("::default");
-        pseudoClasses.add("::cue");
-        pseudoClasses.add("::checked");
-        pseudoClasses.add("::before");
-        pseudoClasses.add("::backdrop");
-        pseudoClasses.add("::any");
-        pseudoClasses.add("::after");
-        pseudoClasses.add("::active");
-        pseudoClasses.add("::-webkit-slider-thumb");
-        pseudoClasses.add("::-webkit-slider-runnable-track");
-        pseudoClasses.add("::-webkit-progress-value");
-        pseudoClasses.add("::-webkit-progress-bar");
-        pseudoClasses.add("::-ms-value");
-        pseudoClasses.add("::-ms-track");
-        pseudoClasses.add("::-ms-tooltip");
-        pseudoClasses.add("::-ms-ticks-before");
-        pseudoClasses.add("::-ms-ticks-after");
-        pseudoClasses.add("::-ms-thumb");
-        pseudoClasses.add("::-ms-reveal");
-        pseudoClasses.add("::-ms-fill-upper");
-        pseudoClasses.add("::-ms-fill-lower");
-        pseudoClasses.add("::-ms-fill");
-        pseudoClasses.add("::-ms-expand");
-        pseudoClasses.add("::-ms-clear");
-        pseudoClasses.add("::-ms-check");
-        pseudoClasses.add("::-ms-browse");
-        pseudoClasses.add("::-moz-range-track");
-        pseudoClasses.add("::-moz-range-thumb");
-        pseudoClasses.add("::-moz-range-progress");
-        pseudoClasses.add("::-moz-progress-bar");
-        pseudoClasses.add(":visited");
-        pseudoClasses.add(":valid");
-        pseudoClasses.add(":target");
-        pseudoClasses.add(":scope");
-        pseudoClasses.add(":root");
-        pseudoClasses.add(":right");
-        pseudoClasses.add(":required");
-        pseudoClasses.add(":read-write");
-        pseudoClasses.add(":read-only");
-        pseudoClasses.add(":placeholder-shown");
-        pseudoClasses.add(":placeholder");
-        pseudoClasses.add(":out-of-range");
-        pseudoClasses.add(":optional");
-        pseudoClasses.add(":only-of-type");
-        pseudoClasses.add(":only-child");
-        pseudoClasses.add(":link");
-        pseudoClasses.add(":left");
-        pseudoClasses.add(":last-of-type");
-        pseudoClasses.add(":last-child");
-        pseudoClasses.add(":invalid");
-        pseudoClasses.add(":indeterminate");
-        pseudoClasses.add(":in-range");
-        pseudoClasses.add(":hover");
-        pseudoClasses.add(":fullscreen");
-        pseudoClasses.add(":focus-within");
-        pseudoClasses.add(":focus-visible");
-        pseudoClasses.add(":focus");
-        pseudoClasses.add(":first-of-type");
-        pseudoClasses.add(":first-line");
-        pseudoClasses.add(":first-letter");
-        pseudoClasses.add(":first-child");
-        pseudoClasses.add(":first");
-        pseudoClasses.add(":enabled");
-        pseudoClasses.add(":empty");
-        pseudoClasses.add(":disabled");
-        pseudoClasses.add(":defined");
-        pseudoClasses.add(":default");
-        pseudoClasses.add(":checked");
-        pseudoClasses.add(":blank");
-        pseudoClasses.add(":before");
-        pseudoClasses.add(":any-link");
-        pseudoClasses.add(":any");
-        pseudoClasses.add(":after");
-        pseudoClasses.add(":active");
-
-        // Extra.
-        pseudoClasses.add(":-ms-input-placeholder");
-
-        pseudoClassesWithbrackets.add(":where()");
-        pseudoClassesWithbrackets.add(":nth-col()");
-        pseudoClassesWithbrackets.add(":nth-last-col()");
-        pseudoClassesWithbrackets.add(":dir()");
-        pseudoClassesWithbrackets.add(":lang()");
-        pseudoClassesWithbrackets.add(":nth-of-type()");
-        pseudoClassesWithbrackets.add(":nth-last-of-type()");
-        pseudoClassesWithbrackets.add(":nth-last-child()");
-        pseudoClassesWithbrackets.add(":nth-child()");
-        pseudoClassesWithbrackets.add(":not()");
-        pseudoClassesWithbrackets.add("::where()");
-        pseudoClassesWithbrackets.add("::nth-col()");
-        pseudoClassesWithbrackets.add(":nth-last-col()");
-        pseudoClassesWithbrackets.add("::dir()");
-        pseudoClassesWithbrackets.add("::lang()");
-        pseudoClassesWithbrackets.add("::nth-of-type()");
-        pseudoClassesWithbrackets.add("::nth-last-of-type()");
-        pseudoClassesWithbrackets.add("::nth-last-child()");
-        pseudoClassesWithbrackets.add("::nth-child()");
-        pseudoClassesWithbrackets.add("::not()");
-
     }
 
     public boolean isSelectorUsed(String selector) {
 
-        // Ownership classes, like :-moz go wrong. You can remove them by setting removeOwnershipClasses to true.    
-        if (this.removeVendorPseudoClasses == true
+        // Vendor pseudo-classes may cause parsing issues. They can be ignored by setting removeVendorPseudoClasses to true.
+        if (this.removeVendorPseudoClasses
                 && (selector.contains("::-moz")
                 || selector.contains("::-webkit")
                 || selector.contains("::-ms-"))) {
@@ -226,7 +219,7 @@ public class VultureCSSCoreHTMLChecker {
         newSelector = newSelector.trim();
 
         if (newSelector.endsWith(">")) {
-            newSelector = newSelector.substring(0, newSelector.length() - 2);
+            newSelector = newSelector.substring(0, newSelector.length() - 1).trim();
         }
 
         // Whitelist.
@@ -244,20 +237,11 @@ public class VultureCSSCoreHTMLChecker {
 
         }
 
-        Elements elm;
-
-        // If the search raises an exception, the rule is considered valid 
-        // and included in the final result.
         try {
-            elm = this.htmlDocument.select(newSelector);
+            return !this.htmlDocument.select(newSelector).isEmpty();
         } catch (Selector.SelectorParseException e) {
-            //System.out.println(selector);
-            //System.out.println(newSelector);
-            //System.err.println(e.toString());
             return true;
         }
-
-        return (!elm.isEmpty());
 
     }
 
@@ -277,7 +261,7 @@ public class VultureCSSCoreHTMLChecker {
 
             String selectorAsString = selector.getAsCSSString().trim();
 
-            if (!"".equals(selectorAsString)) {
+            if (!selectorAsString.isEmpty()) {
 
                 if (isSelectorUsed(selectorAsString)) {
                     finalSelectors.add(selector);
@@ -320,14 +304,14 @@ public class VultureCSSCoreHTMLChecker {
         }
 
         // Pseudo standard classes.
-        for (String pseudo : this.pseudoClasses) {
+        for (String pseudo : VultureCSSCoreHTMLChecker.PSEUDO_CLASSES) {
             selector = selector.replace(pseudo, "");
         }
 
         // It is possible that pseudo classes are also used inside the not(),
         // so the result would be :not() which would obviously return error
         // Because the not can't be empty.
-        for (String pseudo : this.pseudoClassesWithbrackets) {
+        for (String pseudo : VultureCSSCoreHTMLChecker.PSEUDO_CLASSES_WITH_BRACKETS) {
             selector = selector.replace(pseudo, "");
         }
 

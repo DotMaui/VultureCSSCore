@@ -47,6 +47,8 @@ import java.util.List;
 import org.json.JSONObject;
 import static com.dotmaui.vulturecss.utils.Interface.downloadFromUrl;
 import static com.dotmaui.vulturecss.utils.Interface.downloadRenderedPage;
+import cz.vutbr.web.css.CSSException;
+import java.io.IOException;
 
 public class VultureCSSCore {
 
@@ -151,8 +153,8 @@ public class VultureCSSCore {
                 String used_css = "";
 
                 try {
-                    used_css = CompareCSSHTML.Process(this.html, css_string_from_url, this.options);
-                } catch (Exception ex) {
+                    used_css = CompareCSSHTML.process(this.html, css_string_from_url, this.options);
+                } catch (CSSException | IOException ex) {
                     c.setParseError(true);
                 }
 
@@ -183,7 +185,7 @@ public class VultureCSSCore {
             String used_css = "";
 
             try {
-                used_css = CompareCSSHTML.Process(this.html, this.css, this.options);
+                used_css = CompareCSSHTML.process(this.html, this.css, this.options);
             } catch (Exception ex) {
                 carcass.setParseError(true);
             }
